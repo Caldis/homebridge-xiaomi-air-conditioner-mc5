@@ -1,13 +1,11 @@
 "use strict";
 const XiaoMiAirConditionMC5_1 = require("./XiaoMiAirConditionMC5");
-const PLATFORM_NAME = 'XiaoMiAirCondition';
-let hap;
+const PLATFORM_NAME = 'XiaoMiAirConditionMC5';
 class Platform {
     constructor(logging, platformConfig, api) {
+        this.hap = api.hap;
         this.log = logging;
         this.devices = platformConfig.devices;
-        // Initialization log
-        this.log.info(`${PLATFORM_NAME} platform is initialized`, platformConfig);
     }
     /*
      * This method is called to retrieve all accessories exposed by the platform.
@@ -16,11 +14,15 @@ class Platform {
      * The set of exposed accessories CANNOT change over the lifetime of the plugin!
      */
     accessories(callback) {
-        callback(this.devices.map(item => new XiaoMiAirConditionMC5_1.XiaoMiAirConditionMC5(hap, this.log, item)));
+        callback(this.devices.map(item => new XiaoMiAirConditionMC5_1.XiaoMiAirConditionMC5({
+            hap: this.hap,
+            log: this.log,
+            identify: item,
+        })));
+        this.log.info(`${PLATFORM_NAME} platform is initialized`);
     }
 }
 module.exports = (api) => {
-    hap = api.hap;
     api.registerPlatform(PLATFORM_NAME, Platform);
 };
 //# sourceMappingURL=index.js.map

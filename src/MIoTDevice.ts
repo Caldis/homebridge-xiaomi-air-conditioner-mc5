@@ -1,10 +1,26 @@
 /// <reference path = "global.d.ts" />
-import { Logging } from 'homebridge'
+import {
+  CharacteristicEventTypes,
+  CharacteristicGetCallback,
+  CharacteristicSetCallback,
+  CharacteristicValue,
+  HAP, Logging, Service,
+} from 'homebridge'
+import { sleep } from './MIoTDevice.utils'
 import miio, { DeviceInstance, Spec, SpecsGetQuery } from 'miio'
-import { sleep } from './XiaoMiAirConditionMC5.utils'
 
 export type MIoTDeviceIdentify = { name: string; token: string; address: string; }
 
+type Props = {
+  hap: HAP
+  log: Logging
+  characteristicsService: Service
+  identify: MIoTDeviceIdentify
+}
+type RegisterConfig = {
+  get: { properties: string[]; formatter: (value: { [property: string]: any }) => any }
+  set: { property: string; formatter: (value: any) => any }
+}
 enum ErrorMessages {
   NotConnect = 'Device not connected.',
   SpecNotFound = 'Spec not found.',
@@ -12,17 +28,24 @@ enum ErrorMessages {
 
 export default class MIoTDevice {
 
-  // Basic Status
-  protected device?: DeviceInstance
+  // Requirement
+  private readonly log: Logging
+  private readonly hap: HAP
+  private readonly characteristicsService: Service
+  // Device
   private readonly identify: MIoTDeviceIdentify
+  protected device?: DeviceInstance
   // Properties
   private specs: { [name: string]: Spec } = {}
-  // Utils
-  private readonly log: Logging
 
-  constructor (identify: MIoTDeviceIdentify, logger: Logging) {
-    this.identify = identify
-    this.log = logger
+  constructor (props: Props) {
+    // HomeBridge
+    this.hap = props.hap
+    this.log = props.log
+    this.characteristicsService = props.characteristicsService
+    // Device
+    this.identify = props.identify
+    // Connect
     ;(async () => this.connect())()
   }
 
@@ -35,15 +58,19 @@ export default class MIoTDevice {
   private connect = async () => {
     // Device
     try {
+      // Create miio device instance
       const device = await miio.device({
         address: this.identify.address,
         token: this.identify.token,
       })
+      // Extract deviceId and attach to instance
       device.did = device.id.replace(/miio:/, '')
+      // Logger
       this.device = device
       this.log(`${this.identify.name} ${this.identify.address} connected.`)
       return true
     } catch (e) {
+      // Retry if failure
       if (!this.isConnected) {
         this.log(`${this.identify.name} ${this.identify.address} connect failure, reconnecting ...`, e)
         await sleep(5000)
@@ -90,6 +117,9 @@ export default class MIoTDevice {
     // Action
     return this.device.miioCall<T>('get_properties', targetSpecs)
   }
+  private pullProperty = async <T extends any> (name?: string | string[]) => {
+
+  }
   public setProperty = async <T extends any> (name: string, value: T) => {
     // Guard
     if (!this.isConnected) await this.connect()
@@ -100,5 +130,39 @@ export default class MIoTDevice {
     if (!targetSpec) throw new Error(ErrorMessages.SpecNotFound)
     // Action
     return this.device.miioCall<T>('set_properties', [Object.assign(targetSpec, { did, value })])
+  }
+
+  // Events
+  public addCharacteristicListener(type: any, config: RegisterConfig) {
+    const characteristic = this.characteristicsService.getCharacteristic(type)
+    if ('get' in config) {
+      characteristic.on(CharacteristicEventTypes.GET, async (callback: CharacteristicGetCallback) => {
+        try {
+          const res = await this.getProperty(config.get.properties)
+          const resMapped = config.get.formatter(res.reduce((acc, cur, idx) => (
+            { acc, [config.get.properties[idx]]: cur.value }
+          ), {} as { [property: string]: any }))
+          const resFormatted = config.get.formatter(resMapped)
+          this.log(`${config.get.properties} GET`, resMapped)
+          callback(undefined, resFormatted)
+        } catch (e) {
+          this.log(`${config.get.properties} ERROR`, e)
+          callback(e)
+        }
+      })
+    }
+    if ('set' in config) {
+      characteristic.on(CharacteristicEventTypes.SET, async (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
+        try {
+          const valueFormatted = config.set.formatter(value)
+          await this.setProperty(config.set.property, valueFormatted)
+          this.log(`${config.set.property} SET`, value, valueFormatted)
+          callback(undefined, value)
+        } catch (e) {
+          this.log(`${config.set.property} ERROR`, e)
+          callback(e)
+        }
+      })
+    }
   }
 }

@@ -1,55 +1,42 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.FanLevelCode = exports.ModeCode = exports.IndicatorLight = exports.Alarm = exports.Environment = exports.FanControl = exports.AirConditioner = void 0;
-// 空调信息
-const XiaoMiAirConditionMC5_utils_1 = require("./XiaoMiAirConditionMC5.utils");
-exports.AirConditioner = XiaoMiAirConditionMC5_utils_1.withNames({
+exports.FanLevelCode = exports.AirConditionerModeCode = exports.Specs = void 0;
+// 特性信息
+exports.Specs = {
     // 启动状态
-    SwitchStatus: { siid: 2, piid: 1 },
+    AirConditionerSwitchStatus: { name: 'AirConditionerSwitchStatus', siid: 2, piid: 1 },
     // 运行模式
-    Mode: { siid: 2, piid: 2 },
+    AirConditionerMode: { name: 'AirConditionerMode', siid: 2, piid: 2 },
     // 目标温度
-    TargetTemperature: { siid: 2, piid: 4 },
+    AirConditionerTargetTemperature: { name: 'AirConditionerMode', siid: 2, piid: 4 },
     // 节能模式
-    ECOMode: { siid: 2, piid: 7 },
+    AirConditionerECOMode: { name: 'AirConditionerECOMode', siid: 2, piid: 7 },
     // 制热模式
-    HeaterMode: { siid: 2, piid: 9 },
+    AirConditionerHeaterMode: { name: 'AirConditionerHeaterMode', siid: 2, piid: 9 },
     // 除湿模式
-    DryerMode: { siid: 2, piid: 10 },
+    AirConditionerDryerMode: { name: 'AirConditionerDryerMode', siid: 2, piid: 10 },
     // 睡眠模式
-    SleepMode: { siid: 2, piid: 11 },
-}, 'AirConditioner');
-// 风扇控制
-exports.FanControl = XiaoMiAirConditionMC5_utils_1.withNames({
+    AirConditionerSleepMode: { name: 'AirConditionerSleepMode', siid: 2, piid: 11 },
     // 风扇级别
-    FanLevel: { siid: 3, piid: 2 },
+    FanLevel: { name: 'FanLevel', siid: 3, piid: 2 },
     // 风扇摆动
-    VerticalSwing: { siid: 3, piid: 4 },
-}, 'FanControl');
-// 环境传感
-exports.Environment = XiaoMiAirConditionMC5_utils_1.withNames({
+    FanVerticalSwing: { name: 'FanVerticalSwing', siid: 3, piid: 4 },
     // 环境温度
-    Temperature: { siid: 4, piid: 7 },
-}, 'Environment');
-// 提示声音
-exports.Alarm = XiaoMiAirConditionMC5_utils_1.withNames({
+    EnvironmentTemperature: { name: 'EnvironmentTemperature', siid: 4, piid: 7 },
     // 提示声音
-    Alarm: { siid: 5, piid: 1 },
-}, 'Alarm');
-// 指示照明
-exports.IndicatorLight = XiaoMiAirConditionMC5_utils_1.withNames({
+    Alarm: { name: 'Alarm', siid: 5, piid: 1 },
     // 指示照明
-    SwitchStatus: { siid: 6, piid: 1 },
-}, 'IndicatorLight');
-// 运行模式代码
-var ModeCode;
-(function (ModeCode) {
-    ModeCode[ModeCode["Cool"] = 2] = "Cool";
-    ModeCode[ModeCode["Dry"] = 3] = "Dry";
-    ModeCode[ModeCode["Fan"] = 4] = "Fan";
-    ModeCode[ModeCode["Heat"] = 5] = "Heat";
-})(ModeCode = exports.ModeCode || (exports.ModeCode = {}));
-// 风扇级别代码
+    IndicatorLightSwitchStatus: { name: 'IndicatorLightSwitchStatus', siid: 6, piid: 1 },
+};
+// 运行模式枚举
+var AirConditionerModeCode;
+(function (AirConditionerModeCode) {
+    AirConditionerModeCode[AirConditionerModeCode["Cool"] = 2] = "Cool";
+    AirConditionerModeCode[AirConditionerModeCode["Dry"] = 3] = "Dry";
+    AirConditionerModeCode[AirConditionerModeCode["Fan"] = 4] = "Fan";
+    AirConditionerModeCode[AirConditionerModeCode["Heat"] = 5] = "Heat";
+})(AirConditionerModeCode = exports.AirConditionerModeCode || (exports.AirConditionerModeCode = {}));
+// 风扇级别枚举
 var FanLevelCode;
 (function (FanLevelCode) {
     FanLevelCode[FanLevelCode["Auto"] = 0] = "Auto";

@@ -1,51 +1,33 @@
-// 空调信息
-import { withNames } from './XiaoMiAirConditionMC5.utils'
-
-export const AirConditioner = withNames({
+// 特性信息
+export const Specs = {
   // 启动状态
-  SwitchStatus: { siid: 2, piid: 1 },
+  AirConditionerSwitchStatus: { name: 'AirConditionerSwitchStatus', siid: 2, piid: 1 },
   // 运行模式
-  Mode: { siid: 2, piid: 2 },
+  AirConditionerMode: { name: 'AirConditionerMode', siid: 2, piid: 2 },
   // 目标温度
-  TargetTemperature: { siid: 2, piid: 4 },
+  AirConditionerTargetTemperature: { name: 'AirConditionerMode', siid: 2, piid: 4 },
   // 节能模式
-  ECOMode: { siid: 2, piid: 7 },
+  AirConditionerECOMode:{ name: 'AirConditionerECOMode', siid: 2, piid: 7 },
   // 制热模式
-  HeaterMode: { siid: 2, piid: 9 },
+  AirConditionerHeaterMode:{ name: 'AirConditionerHeaterMode', siid: 2, piid: 9 },
   // 除湿模式
-  DryerMode: { siid: 2, piid: 10 },
+  AirConditionerDryerMode:{ name: 'AirConditionerDryerMode', siid: 2, piid: 10 },
   // 睡眠模式
-  SleepMode: { siid: 2, piid: 11 },
-}, 'AirConditioner')
-
-// 风扇控制
-export const FanControl = withNames({
+  AirConditionerSleepMode:{ name: 'AirConditionerSleepMode', siid: 2, piid: 11 },
   // 风扇级别
-  FanLevel: { siid: 3, piid: 2 },
+  FanLevel:{ name: 'FanLevel', siid: 3, piid: 2 },
   // 风扇摆动
-  VerticalSwing: { siid: 3, piid: 4 },
-}, 'FanControl')
-
-// 环境传感
-export const Environment = withNames({
+  FanVerticalSwing:{ name: 'FanVerticalSwing', siid: 3, piid: 4 },
   // 环境温度
-  Temperature: { siid: 4, piid: 7 },
-}, 'Environment')
-
-// 提示声音
-export const Alarm = withNames({
+  EnvironmentTemperature:{ name: 'EnvironmentTemperature', siid: 4, piid: 7 },
   // 提示声音
-  Alarm: { siid: 5, piid: 1 },
-}, 'Alarm')
-
-// 指示照明
-export const IndicatorLight = withNames({
+  Alarm:{ name: 'Alarm', siid: 5, piid: 1 },
   // 指示照明
-  SwitchStatus: { siid: 6, piid: 1 },
-}, 'IndicatorLight')
+  IndicatorLightSwitchStatus:{ name: 'IndicatorLightSwitchStatus', siid: 6, piid: 1 },
+}
 
-// 运行模式代码
-export enum ModeCode { Cool = 2, Dry = 3, Fan = 4, Heat = 5}
+// 运行模式枚举
+export enum AirConditionerModeCode { Cool = 2, Dry = 3, Fan = 4, Heat = 5}
 
-// 风扇级别代码
+// 风扇级别枚举
 export enum FanLevelCode { Auto, Level1, Level2, Level3, Level4, Level5, Level6, Level7 }

@@ -3,34 +3,38 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const MIoTDevice_utils_1 = require("./MIoTDevice.utils");
 const miio_1 = __importDefault(require("miio"));
-const XiaoMiAirConditionMC5_utils_1 = require("./XiaoMiAirConditionMC5.utils");
 var ErrorMessages;
 (function (ErrorMessages) {
     ErrorMessages["NotConnect"] = "Device not connected.";
     ErrorMessages["SpecNotFound"] = "Spec not found.";
 })(ErrorMessages || (ErrorMessages = {}));
 class MIoTDevice {
-    constructor(identify, logger) {
+    constructor(props) {
         // Properties
         this.specs = {};
         // Connection
         this.connect = async () => {
             // Device
             try {
+                // Create miio device instance
                 const device = await miio_1.default.device({
                     address: this.identify.address,
                     token: this.identify.token,
                 });
+                // Extract deviceId and attach to instance
                 device.did = device.id.replace(/miio:/, '');
+                // Logger
                 this.device = device;
                 this.log(`${this.identify.name} ${this.identify.address} connected.`);
                 return true;
             }
             catch (e) {
+                // Retry if failure
                 if (!this.isConnected) {
                     this.log(`${this.identify.name} ${this.identify.address} connect failure, reconnecting ...`, e);
-                    await XiaoMiAirConditionMC5_utils_1.sleep(5000);
+                    await MIoTDevice_utils_1.sleep(5000);
                     await this.connect();
                 }
                 return true;
@@ -97,13 +101,50 @@ class MIoTDevice {
             // Action
             return this.device.miioCall('set_properties', [Object.assign(targetSpec, { did, value })]);
         };
-        this.identify = identify;
-        this.log = logger;
+        // HomeBridge
+        this.hap = props.hap;
+        this.log = props.log;
+        this.characteristicsService = props.characteristicsService;
+        // Device
+        this.identify = props.identify;
         (async () => this.connect())();
     }
     // Flags
     get isConnected() {
         return !!this.device;
+    }
+    // Events
+    addCharacteristicListener(type, config) {
+        const characteristic = this.characteristicsService.getCharacteristic(type);
+        if ('get' in config) {
+            characteristic.on("get" /* GET */, async (callback) => {
+                try {
+                    const res = await this.getProperty(config.get.properties);
+                    const resMapped = config.get.formatter(res.reduce((acc, cur, idx) => ({ acc, [config.get.properties[idx]]: cur.value }), {}));
+                    const resFormatted = config.get.formatter(resMapped);
+                    this.log(`${config.get.properties} GET`, resMapped);
+                    callback(undefined, resFormatted);
+                }
+                catch (e) {
+                    this.log(`${config.get.properties} ERROR`, e);
+                    callback(e);
+                }
+            });
+        }
+        if ('set' in config) {
+            characteristic.on("set" /* SET */, async (value, callback) => {
+                try {
+                    const valueFormatted = config.set.formatter(value);
+                    await this.setProperty(config.set.property, valueFormatted);
+                    this.log(`${config.set.property} SET`, value, valueFormatted);
+                    callback(undefined, value);
+                }
+                catch (e) {
+                    this.log(`${config.set.property} ERROR`, e);
+                    callback(e);
+                }
+            });
+        }
     }
 }
 exports.default = MIoTDevice;

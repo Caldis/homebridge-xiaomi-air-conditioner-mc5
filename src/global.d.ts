@@ -8,6 +8,9 @@ declare module 'miio' {
   type SpecsSetQuery = SpecSetQuery[]
   type SpecsResponse<T> = Spec & { did: string; value: T }
 
+  export type DeviceConfig = { name: string; address: string; token: string; }
+  export type DeviceConfigs = DeviceConfig[]
+
   class DeviceInstance {
     public id: string
     public did: string
@@ -20,6 +23,6 @@ declare module 'miio' {
     static device: (args: { address: string; token: string }) => Promise<DeviceInstance>
   }
 
-  export { Spec, Specs, SpecGetQuery, SpecsGetQuery, SpecSetQuery, SpecsSetQuery, DeviceInstance }
+  export { Spec, Specs, SpecGetQuery, SpecsGetQuery, SpecSetQuery, SpecsSetQuery, SpecsResponse, DeviceInstance }
   export default miio
 }
