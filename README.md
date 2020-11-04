@@ -13,6 +13,11 @@ Homebridge 小米空调插件
 
 其余型号无条件测试，不保证可用性
 
+## 安装
+```bash
+npm i homebridge-xiaomi-airconditionmc5@latest
+```
+
 ## 配置
 ```json
 "platforms": [
