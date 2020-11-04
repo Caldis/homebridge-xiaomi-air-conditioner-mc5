@@ -1,4 +1,3 @@
-// @ts-ignore
 import { AccessoryPlugin, HAP, Logging, Service } from 'homebridge'
 import MIoTDevice, { MIoTDeviceIdentify } from './MIoTDevice'
 import { AirConditionerModeCode, Specs } from './XiaoMiAirConditionMC5.constant'

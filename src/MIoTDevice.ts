@@ -1,4 +1,3 @@
-/// <reference path = "global.d.ts" />
 import debounce from 'lodash.debounce'
 import {
   CharacteristicEventTypes,
