@@ -1,25 +1,12 @@
 // @ts-ignore
-import {
-  AccessoryPlugin,
-  HAP,
-  Logging,
-  Service
-} from 'homebridge'
+import { AccessoryPlugin, HAP, Logging, Service } from 'homebridge'
 import MIoTDevice, { MIoTDeviceIdentify } from './MIoTDevice'
-import { Specs, AirConditionerModeCode } from './XiaoMiAirConditionMC5.constant'
-import { SpecsResponse } from 'miio'
+import { AirConditionerModeCode, Specs } from './XiaoMiAirConditionMC5.constant'
 
 type Props = {
-  hap: HAP;
-  log: Logging;
+  hap: HAP
+  log: Logging
   identify: MIoTDeviceIdentify
-}
-type Characteristics = {
-  SwitchStatus: SpecsResponse<boolean>
-  Mode: SpecsResponse<AirConditionerModeCode>
-  TargetTemperature: SpecsResponse<number>
-  Temperature: SpecsResponse<number>
-  VerticalSwing: SpecsResponse<boolean>
 }
 
 export class XiaoMiAirConditionMC5 implements AccessoryPlugin {
@@ -30,14 +17,12 @@ export class XiaoMiAirConditionMC5 implements AccessoryPlugin {
   private readonly address: string
   // Foundation
   private readonly hap: HAP
-  private readonly log: (...strings: Parameters<Logging>) => void
+  private readonly log: Logging
   // Services
   private readonly informationService: Service
   private readonly characteristicsService: Service
   // Device
   private device: MIoTDevice
-  // DEBUG
-  private debug = true
 
   constructor (props: Props) {
     // Requirement
@@ -46,7 +31,7 @@ export class XiaoMiAirConditionMC5 implements AccessoryPlugin {
     this.address = props.identify.address
     // Foundation
     this.hap = props.hap
-    this.log = (...args) => this.debug && props.log.info(...args)
+    this.log = props.log
     // Services
     this.informationService = new props.hap.Service.AccessoryInformation()
       .setCharacteristic(this.hap.Characteristic.Manufacturer, 'XiaoMi')
@@ -60,157 +45,70 @@ export class XiaoMiAirConditionMC5 implements AccessoryPlugin {
   }
 
   registrySpecs = () => {
-    Object.entries(Specs).forEach(([_, spec]) => {
-      this.device.addSpec(spec)
-    })
+    Object.values(Specs).forEach(i => this.device.addSpec(i))
   }
   registryCharacters = () => {
     this.device.addCharacteristicListener(this.hap.Characteristic.Active, {
       get: {
-        properties: [Specs.AirConditionerSwitchStatus.name],
-        formatter: (value) => value[Specs.AirConditionerSwitchStatus.name] ? 1 : 0
+        formatter: (valueMapping) => valueMapping[Specs.AirConditionerSwitchStatus.name] ? 1 : 0
       },
       set: {
         property: Specs.AirConditionerSwitchStatus.name,
         formatter: (value) => value === 1
       },
     })
-    // this.characteristicsService.getCharacteristic(this.hap.Characteristic.CurrentHeaterCoolerState)
-    //   .on(CharacteristicEventTypes.GET, async (callback: CharacteristicGetCallback) => {
-    //     try {
-    //       const [SwitchStatus, Mode] = await this.device.getProperty([
-    //         AirConditioner.SwitchStatus.name,
-    //         AirConditioner.Mode.name,
-    //       ])
-    //       this.log('Characteristic.CurrentHeaterCoolerState.GET')
-    //       this.log('AirConditioner.SwitchStatus', SwitchStatus)
-    //       this.log('AirConditioner.Mode', Mode)
-    //       if (!SwitchStatus.value) {
-    //         callback(undefined, 0)
-    //       } else {
-    //         callback(undefined, Mode.value === ModeCode.Heat ? 2 : 3)
-    //       }
-    //     } catch (e) {
-    //       this.log('Characteristic.CurrentHeaterCoolerState.GET.ERR', e)
-    //       callback(e)
-    //     }
-    //   })
-    // this.characteristicsService.getCharacteristic(this.hap.Characteristic.TargetHeaterCoolerState)
-    //   .on(CharacteristicEventTypes.GET, async (callback: CharacteristicGetCallback) => {
-    //     try {
-    //       const [SwitchStatus, Mode] = await this.device.getProperty([
-    //         AirConditioner.SwitchStatus.name,
-    //         AirConditioner.Mode.name,
-    //       ])
-    //       this.log('Characteristic.CurrentHeaterCoolerState.GET')
-    //       this.log('AirConditioner.SwitchStatus', SwitchStatus)
-    //       this.log('AirConditioner.Mode', Mode)
-    //       if (!SwitchStatus.value) {
-    //         callback(undefined, 0)
-    //       } else {
-    //         callback(undefined, Mode.value === ModeCode.Heat ? 1 : 2)
-    //       }
-    //     } catch (e) {
-    //       this.log('Characteristic.CurrentHeaterCoolerState.GET.ERR', e)
-    //       callback(e)
-    //     }
-    //   })
-    //   .on(CharacteristicEventTypes.SET, async (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
-    //     try {
-    //       await this.device.setProperty(AirConditioner.Mode.name, value === 1 ? ModeCode.Heat : ModeCode.Cool)
-    //       this.log('Characteristic.TargetHeaterCoolerState.SET', value)
-    //       callback(undefined, value)
-    //     } catch (e) {
-    //       this.log('Characteristic.TargetHeaterCoolerState.SET.ERR', e)
-    //       callback(e)
-    //     }
-    //   })
-    // this.characteristicsService.getCharacteristic(this.hap.Characteristic.CurrentTemperature)
-    //   .on(CharacteristicEventTypes.GET, async (callback: CharacteristicGetCallback) => {
-    //     try {
-    //       const [Temperature] = await this.device.getProperty([
-    //         Environment.Temperature.name,
-    //       ])
-    //       this.log('Characteristic.CurrentTemperature.GET')
-    //       this.log('AirConditioner.Temperature', Temperature)
-    //       callback(undefined, Temperature.value as number)
-    //     } catch (e) {
-    //       this.log('Characteristic.CurrentTemperature.GET.ERR', e)
-    //       callback(e)
-    //     }
-    //   })
-    // this.characteristicsService.getCharacteristic(this.hap.Characteristic.CoolingThresholdTemperature)
-    //   .on(CharacteristicEventTypes.GET, async (callback: CharacteristicGetCallback) => {
-    //     try {
-    //       const [TargetTemperature] = await this.device.getProperty([
-    //         AirConditioner.TargetTemperature.name,
-    //       ])
-    //       this.log('Characteristic.CoolingThresholdTemperature.GET')
-    //       this.log('AirConditioner.TargetTemperature', TargetTemperature)
-    //       callback(undefined, TargetTemperature.value as number)
-    //     } catch (e) {
-    //       this.log('Characteristic.CoolingThresholdTemperature.GET.ERR', e)
-    //       callback(e)
-    //     }
-    //   })
-    //   .on(CharacteristicEventTypes.SET, async (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
-    //     try {
-    //       await this.device.setProperty(AirConditioner.TargetTemperature.name, value)
-    //       this.log('Characteristic.CoolingThresholdTemperature.SET', value)
-    //       callback(undefined, value)
-    //     } catch (e) {
-    //       this.log('Characteristic.CoolingThresholdTemperature.SET.ERR', e)
-    //       callback(e)
-    //     }
-    //   })
-    // this.characteristicsService.getCharacteristic(this.hap.Characteristic.HeatingThresholdTemperature)
-    //   .on(CharacteristicEventTypes.GET, async (callback: CharacteristicGetCallback) => {
-    //     try {
-    //       const [TargetTemperature] = await this.device.getProperty([
-    //         AirConditioner.TargetTemperature.name,
-    //       ])
-    //       this.log('Characteristic.HeatingThresholdTemperature.GET')
-    //       this.log('AirConditioner.TargetTemperature', TargetTemperature)
-    //       callback(undefined, TargetTemperature.value as number)
-    //     } catch (e) {
-    //       this.log('Characteristic.HeatingThresholdTemperature.GET.ERR', e)
-    //       callback(e)
-    //     }
-    //   })
-    //   .on(CharacteristicEventTypes.SET, async (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
-    //     try {
-    //       await this.device.setProperty(AirConditioner.TargetTemperature.name, value)
-    //       this.log('Characteristic.HeatingThresholdTemperature.SET', value)
-    //       callback(undefined, value)
-    //     } catch (e) {
-    //       this.log('Characteristic.HeatingThresholdTemperature.SET.ERR', e)
-    //       callback(e)
-    //     }
-    //   })
-    // this.characteristicsService.getCharacteristic(this.hap.Characteristic.SwingMode)
-    //   .on(CharacteristicEventTypes.GET, async (callback: CharacteristicGetCallback) => {
-    //     try {
-    //       const [VerticalSwing] = await this.device.getProperty([
-    //         FanControl.VerticalSwing.name,
-    //       ])
-    //       this.log('Characteristic.SwingMode.GET')
-    //       this.log('FanControl.VerticalSwing', VerticalSwing)
-    //       callback(undefined, VerticalSwing.value ? 1 : 0)
-    //     } catch (e) {
-    //       this.log('Characteristic.SwingMode.GET.ERR', e)
-    //       callback(e)
-    //     }
-    //   })
-    //   .on(CharacteristicEventTypes.SET, async (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
-    //     try {
-    //       await this.device.setProperty(FanControl.VerticalSwing.name, value === 1)
-    //       this.log('Characteristic.SwingMode.SET', value)
-    //       callback(undefined, value)
-    //     } catch (e) {
-    //       this.log('Characteristic.SwingMode.SET.ERR', e)
-    //       callback(e)
-    //     }
-    //   })
+    this.device.addCharacteristicListener(this.hap.Characteristic.CurrentHeaterCoolerState, {
+      get: {
+        formatter: (valueMapping) => {
+          if (!valueMapping[Specs.AirConditionerSwitchStatus.name]) return 0
+          return valueMapping[Specs.AirConditionerMode.name] === AirConditionerModeCode.Heat ? 2 : 3
+        }
+      },
+    })
+    this.device.addCharacteristicListener(this.hap.Characteristic.TargetHeaterCoolerState, {
+      get: {
+        formatter: (valueMapping) => {
+          if (!valueMapping[Specs.AirConditionerSwitchStatus.name]) return 0
+          return valueMapping[Specs.AirConditionerMode.name] === AirConditionerModeCode.Heat ? 1 : 2
+        }
+      },
+      set: {
+        property: Specs.AirConditionerMode.name,
+        formatter: (value) => value === 1 ? AirConditionerModeCode.Heat : AirConditionerModeCode.Cool
+      },
+    })
+    this.device.addCharacteristicListener(this.hap.Characteristic.CurrentTemperature, {
+      get: {
+        formatter: (valueMapping) => valueMapping[Specs.EnvironmentTemperature.name]
+      },
+    })
+    this.device.addCharacteristicListener(this.hap.Characteristic.CoolingThresholdTemperature, {
+      get: {
+        formatter: (valueMapping) => valueMapping[Specs.AirConditionerTargetTemperature.name]
+      },
+      set: {
+        property: Specs.AirConditionerTargetTemperature.name,
+        formatter: (value) => value
+      },
+    })
+    this.device.addCharacteristicListener(this.hap.Characteristic.HeatingThresholdTemperature, {
+      get: {
+        formatter: (valueMapping) => valueMapping[Specs.AirConditionerTargetTemperature.name]
+      },
+      set: {
+        property: Specs.AirConditionerTargetTemperature.name,
+        formatter: (value) => value
+      },
+    })
+    this.device.addCharacteristicListener(this.hap.Characteristic.SwingMode, {
+      get: {
+        formatter: (valueMapping) => valueMapping[Specs.FanVerticalSwing.name] ? 1 : 0
+      },
+      set: {
+        property: Specs.FanVerticalSwing.name,
+        formatter: (value) => value === 1
+      },
+    })
   }
 
   /*
@@ -218,7 +116,7 @@ export class XiaoMiAirConditionMC5 implements AccessoryPlugin {
    * Typical this only ever happens at the pairing process.
    */
   identify (): void {
-    this.log(`Identifying ${this.name} ${this.address}`)
+    this.log.info(`Identifying ${this.name} ${this.address}`)
   }
 
   /*

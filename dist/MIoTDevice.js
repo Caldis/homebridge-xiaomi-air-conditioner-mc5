@@ -3,6 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+/// <reference path = "global.d.ts" />
+const lodash_debounce_1 = __importDefault(require("lodash.debounce"));
 const MIoTDevice_utils_1 = require("./MIoTDevice.utils");
 const miio_1 = __importDefault(require("miio"));
 var ErrorMessages;
@@ -10,14 +12,23 @@ var ErrorMessages;
     ErrorMessages["NotConnect"] = "Device not connected.";
     ErrorMessages["SpecNotFound"] = "Spec not found.";
 })(ErrorMessages || (ErrorMessages = {}));
+const RE_CONNECT_THRESHOLD = 60000;
+const REQUEST_CONNECT_DEBOUNCE_THRESHOLD = 1000;
+const REQUEST_PROPERTY_DEBOUNCE_THRESHOLD = 1000;
 class MIoTDevice {
     constructor(props) {
+        this.deviceConnectQueue = [];
         // Properties
         this.specs = {};
+        this.specsQueue = [];
         // Connection
-        this.connect = async () => {
+        this.debounceRequestConnect = lodash_debounce_1.default(async () => {
             // Device
             try {
+                this.log.info(`${this.identify.name} ${this.identify.address} start ${!!this.device ? 're-' : ''}connecting.`);
+                // Pull queue
+                const queue = [...this.deviceConnectQueue];
+                this.deviceConnectQueue = [];
                 // Create miio device instance
                 const device = await miio_1.default.device({
                     address: this.identify.address,
@@ -25,20 +36,30 @@ class MIoTDevice {
                 });
                 // Extract deviceId and attach to instance
                 device.did = device.id.replace(/miio:/, '');
+                device.timeout = Date.now();
                 // Logger
                 this.device = device;
-                this.log(`${this.identify.name} ${this.identify.address} connected.`);
+                queue.forEach(resolve => resolve());
+                this.log.info(`${this.identify.name} ${this.identify.address} connected.`);
                 return true;
             }
             catch (e) {
                 // Retry if failure
                 if (!this.isConnected) {
-                    this.log(`${this.identify.name} ${this.identify.address} connect failure, reconnecting ...`, e);
+                    this.log.info(`${this.identify.name} ${this.identify.address} connect failure, reconnecting ...`, e);
                     await MIoTDevice_utils_1.sleep(5000);
                     await this.connect();
                 }
                 return true;
             }
+        }, REQUEST_CONNECT_DEBOUNCE_THRESHOLD);
+        this.connect = async () => {
+            return new Promise(resolve => {
+                // Queue update
+                this.deviceConnectQueue.push(resolve);
+                // Trigger Property getter
+                this.debounceRequestConnect();
+            });
         };
         // Spec
         this.addSpec = (spec) => {
@@ -52,9 +73,10 @@ class MIoTDevice {
             if (!((_a = this.device) === null || _a === void 0 ? void 0 : _a.did))
                 throw new Error(ErrorMessages.NotConnect);
             const did = this.device.did;
-            // Action
+            // Action: getAll
             if (!name)
                 return Object.values(this.specs).map(i => ({ ...i, did }));
+            // Action: getByName
             const targetSpecs = [];
             if (Array.isArray(name)) {
                 name.forEach(i => {
@@ -65,9 +87,8 @@ class MIoTDevice {
             }
             else {
                 const spec = this.specs[name];
-                if (spec) {
+                if (spec)
                     targetSpecs.push({ ...spec, did });
-                }
             }
             return targetSpecs;
         };
@@ -86,6 +107,26 @@ class MIoTDevice {
             // Action
             return this.device.miioCall('get_properties', targetSpecs);
         };
+        // Merging request by debounce
+        // When HomeBridge device is in initialization
+        // multiple requests will be triggered in order to request the corresponding target value.
+        // These fragmentation request will cause the MIoT device to refuse to response or weak performance
+        // and cause the Accessory display "Not Response" in iOS Home app.
+        this.debounceRequestProperty = lodash_debounce_1.default(async () => {
+            // Spec
+            const targetSpecs = await this.getSpec();
+            // Pull queue
+            const queue = [...this.specsQueue];
+            this.specsQueue = [];
+            // Get properties
+            const properties = await this.device.miioCall('get_properties', targetSpecs);
+            const mapping = targetSpecs.reduce((acc, cur, idx) => ({
+                ...acc,
+                [cur.name]: properties[idx].value
+            }), {});
+            this.log.debug(`Merging request of ${this.identify.name} ${this.identify.address}`);
+            queue.forEach(resolve => resolve(mapping));
+        }, REQUEST_PROPERTY_DEBOUNCE_THRESHOLD);
         this.setProperty = async (name, value) => {
             var _a;
             // Guard
@@ -101,6 +142,22 @@ class MIoTDevice {
             // Action
             return this.device.miioCall('set_properties', [Object.assign(targetSpec, { did, value })]);
         };
+        // Events
+        this.pullProperty = async () => {
+            var _a;
+            // Guard
+            if (!this.isConnected)
+                await this.connect();
+            if (!((_a = this.device) === null || _a === void 0 ? void 0 : _a.did))
+                throw new Error(ErrorMessages.NotConnect);
+            // Action
+            return new Promise((resolve => {
+                // Queue update
+                this.specsQueue.push(resolve);
+                // Trigger Property getter
+                this.debounceRequestProperty();
+            }));
+        };
         // HomeBridge
         this.hap = props.hap;
         this.log = props.log;
@@ -111,39 +168,42 @@ class MIoTDevice {
     }
     // Flags
     get isConnected() {
-        return !!this.device;
+        return !!this.device && Date.now() - this.device.timeout < RE_CONNECT_THRESHOLD;
     }
-    // Events
     addCharacteristicListener(type, config) {
         const characteristic = this.characteristicsService.getCharacteristic(type);
         if ('get' in config) {
             characteristic.on("get" /* GET */, async (callback) => {
                 try {
-                    const res = await this.getProperty(config.get.properties);
-                    const resMapped = config.get.formatter(res.reduce((acc, cur, idx) => ({ acc, [config.get.properties[idx]]: cur.value }), {}));
-                    const resFormatted = config.get.formatter(resMapped);
-                    this.log(`${config.get.properties} GET`, resMapped);
-                    callback(undefined, resFormatted);
+                    this.log.debug(`GET START ${type.name}`, Date.now());
+                    const property = await this.pullProperty();
+                    const propertyFormatted = config.get.formatter(property);
+                    this.log.debug(`GET SUCCESS ${type.name}`, propertyFormatted);
+                    callback(undefined, propertyFormatted);
                 }
                 catch (e) {
-                    this.log(`${config.get.properties} ERROR`, e);
+                    this.log.error(`ERROR ${type.name}`, e);
                     callback(e);
                 }
             });
         }
         if ('set' in config) {
-            characteristic.on("set" /* SET */, async (value, callback) => {
-                try {
-                    const valueFormatted = config.set.formatter(value);
-                    await this.setProperty(config.set.property, valueFormatted);
-                    this.log(`${config.set.property} SET`, value, valueFormatted);
-                    callback(undefined, value);
-                }
-                catch (e) {
-                    this.log(`${config.set.property} ERROR`, e);
-                    callback(e);
-                }
-            });
+            const set = config.set;
+            if (set) {
+                characteristic.on("set" /* SET */, async (value, callback) => {
+                    try {
+                        this.log.debug(`SET START ${type.name}`, Date.now());
+                        const valueFormatted = set.formatter(value);
+                        await this.setProperty(set.property, valueFormatted);
+                        this.log.debug(`SET SUCCESS ${type.name}`, valueFormatted);
+                        callback(undefined, value);
+                    }
+                    catch (e) {
+                        this.log.error(`ERROR ${type.name}`, e);
+                        callback(e);
+                    }
+                });
+            }
         }
     }
 }
