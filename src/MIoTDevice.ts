@@ -6,7 +6,7 @@ import {
   CharacteristicValue,
   HAP, Logging, Service,
 } from 'homebridge'
-import { sleep } from './MIoTDevice.utils'
+import { getDeviceId, sleep } from './MIoTDevice.utils'
 import miio, {
   DeviceInstance,
   Spec,
@@ -33,9 +33,9 @@ enum ErrorMessages {
   SpecNotFound = 'Spec not found.',
 }
 
-const RE_CONNECT_THRESHOLD = 60000
-const REQUEST_CONNECT_DEBOUNCE_THRESHOLD = 1000
-const REQUEST_PROPERTY_DEBOUNCE_THRESHOLD = 1000
+const RE_CONNECT_THRESHOLD = 90000
+const REQUEST_CONNECT_DEBOUNCE_THRESHOLD = 500
+const REQUEST_PROPERTY_DEBOUNCE_THRESHOLD = 500
 
 export default class MIoTDevice {
 
@@ -64,7 +64,12 @@ export default class MIoTDevice {
 
   // Flags
   get isConnected () {
-    return !!this.device && Date.now() - this.device.timeout < RE_CONNECT_THRESHOLD
+    const now = Date.now()
+    const flag = !!this.device && (now - this.device.timeout < RE_CONNECT_THRESHOLD)
+    if (!!this.device && flag) {
+      this.device.timeout = now
+    }
+    return flag
   }
 
   // Connection
@@ -81,7 +86,7 @@ export default class MIoTDevice {
         token: this.identify.token,
       })
       // Extract deviceId and attach to instance
-      device.did = device.id.replace(/miio:/, '')
+      device.did = getDeviceId(device.id)
       device.timeout = Date.now()
       // Logger
       this.device = device
