@@ -1,4 +1,4 @@
-# homebridge-xiaomi-airconditionmc5
+# homebridge-xiaomi-aircondition-mc5
 
 HomeBridge Plugin for XiaoMiAirConditionMC5
 
