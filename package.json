@@ -1,6 +1,6 @@
 {
   "name": "homebridge-xiaomi-airconditionmc5",
-  "version": "1.1.11",
+  "version": "1.1.111",
   "description": "HomeBridge xiaomi AirConditionMC5",
   "main": "dist/index.js",
   "dependencies": {
