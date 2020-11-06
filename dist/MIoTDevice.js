@@ -3,7 +3,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-/// <reference path = "global.d.ts" />
 const lodash_debounce_1 = __importDefault(require("lodash.debounce"));
 const MIoTDevice_utils_1 = require("./MIoTDevice.utils");
 const miio_1 = __importDefault(require("miio"));
@@ -12,9 +11,9 @@ var ErrorMessages;
     ErrorMessages["NotConnect"] = "Device not connected.";
     ErrorMessages["SpecNotFound"] = "Spec not found.";
 })(ErrorMessages || (ErrorMessages = {}));
-const RE_CONNECT_THRESHOLD = 60000;
-const REQUEST_CONNECT_DEBOUNCE_THRESHOLD = 1000;
-const REQUEST_PROPERTY_DEBOUNCE_THRESHOLD = 1000;
+const RE_CONNECT_THRESHOLD = 90000;
+const REQUEST_CONNECT_DEBOUNCE_THRESHOLD = 500;
+const REQUEST_PROPERTY_DEBOUNCE_THRESHOLD = 500;
 class MIoTDevice {
     constructor(props) {
         this.deviceConnectQueue = [];
@@ -35,7 +34,7 @@ class MIoTDevice {
                     token: this.identify.token,
                 });
                 // Extract deviceId and attach to instance
-                device.did = device.id.replace(/miio:/, '');
+                device.did = MIoTDevice_utils_1.getDeviceId(device.id);
                 device.timeout = Date.now();
                 // Logger
                 this.device = device;
@@ -168,7 +167,12 @@ class MIoTDevice {
     }
     // Flags
     get isConnected() {
-        return !!this.device && Date.now() - this.device.timeout < RE_CONNECT_THRESHOLD;
+        const now = Date.now();
+        const flag = !!this.device && (now - this.device.timeout < RE_CONNECT_THRESHOLD);
+        if (!!this.device && flag) {
+            this.device.timeout = now;
+        }
+        return flag;
     }
     addCharacteristicListener(type, config) {
         const characteristic = this.characteristicsService.getCharacteristic(type);
