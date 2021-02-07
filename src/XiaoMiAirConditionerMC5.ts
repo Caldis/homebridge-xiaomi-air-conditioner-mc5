@@ -1,12 +1,12 @@
 import { AccessoryPlugin, Service } from 'homebridge'
-import { AirConditionerModeCode, Specs } from './XiaoMiAirConditionMC5.constant'
+import { AirConditionerModeCode, Specs } from './XiaoMiAirConditionerMC5.constant'
 import { MIoTDevice, MIoTDeviceIdentify, SharedFoundation } from 'homebridge-miot-devices'
 
 type Props = {
   identify: MIoTDeviceIdentify
 }
 
-export class XiaoMiAirConditionMC5 implements AccessoryPlugin {
+export class XiaoMiAirConditionerMC5 implements AccessoryPlugin {
 
   // Requirement
   private readonly name: string
@@ -14,9 +14,9 @@ export class XiaoMiAirConditionMC5 implements AccessoryPlugin {
   private readonly address: string
   // Services
   private readonly informationService: Service
-  private readonly AirConditionService: Service
+  private readonly AirConditionerService: Service
   // Device
-  private AirConditionDevice: MIoTDevice
+  private AirConditionerDevice: MIoTDevice
 
   constructor (props: Props) {
     // Requirement
@@ -27,15 +27,15 @@ export class XiaoMiAirConditionMC5 implements AccessoryPlugin {
     this.informationService = new SharedFoundation.hap.Service.AccessoryInformation()
       .setCharacteristic(SharedFoundation.hap.Characteristic.Manufacturer, 'XiaoMi')
       .setCharacteristic(SharedFoundation.hap.Characteristic.Model, 'MC5')
-    // AirCondition
-    this.AirConditionService = new SharedFoundation.hap.Service.HeaterCooler(props.identify.name)
-    this.AirConditionDevice = new MIoTDevice({ ...props, characteristicsService: this.AirConditionService })
-    this.AirConditionSetup()
+    // AirConditioner
+    this.AirConditionerService = new SharedFoundation.hap.Service.HeaterCooler(props.identify.name)
+    this.AirConditionerDevice = new MIoTDevice({ ...props, characteristicsService: this.AirConditionerService })
+    this.AirConditionerSetup()
   }
 
-  AirConditionSetup = () => {
-    this.AirConditionDevice.addMIoTSpec(Specs)
-    this.AirConditionDevice.addMIoTCharacteristicListener(SharedFoundation.hap.Characteristic.Active, {
+  AirConditionerSetup = () => {
+    this.AirConditionerDevice.addMIoTSpec(Specs)
+    this.AirConditionerDevice.addMIoTCharacteristicListener(SharedFoundation.hap.Characteristic.Active, {
       get: {
         formatter: (valueMapping) => valueMapping[Specs.AirConditionerSwitchStatus.name] ? 1 : 0
       },
@@ -44,7 +44,7 @@ export class XiaoMiAirConditionMC5 implements AccessoryPlugin {
         formatter: (value) => value === 1
       },
     })
-    this.AirConditionDevice.addMIoTCharacteristicListener(SharedFoundation.hap.Characteristic.CurrentHeaterCoolerState, {
+    this.AirConditionerDevice.addMIoTCharacteristicListener(SharedFoundation.hap.Characteristic.CurrentHeaterCoolerState, {
       get: {
         formatter: (valueMapping) => {
           if (!valueMapping[Specs.AirConditionerSwitchStatus.name]) return 0
@@ -52,7 +52,7 @@ export class XiaoMiAirConditionMC5 implements AccessoryPlugin {
         }
       },
     })
-    this.AirConditionDevice.addMIoTCharacteristicListener(SharedFoundation.hap.Characteristic.TargetHeaterCoolerState, {
+    this.AirConditionerDevice.addMIoTCharacteristicListener(SharedFoundation.hap.Characteristic.TargetHeaterCoolerState, {
       get: {
         formatter: (valueMapping) => {
           if (!valueMapping[Specs.AirConditionerSwitchStatus.name]) return 0
@@ -64,12 +64,12 @@ export class XiaoMiAirConditionMC5 implements AccessoryPlugin {
         formatter: (value) => value === 1 ? AirConditionerModeCode.Heat : AirConditionerModeCode.Cool
       },
     })
-    this.AirConditionDevice.addMIoTCharacteristicListener(SharedFoundation.hap.Characteristic.CurrentTemperature, {
+    this.AirConditionerDevice.addMIoTCharacteristicListener(SharedFoundation.hap.Characteristic.CurrentTemperature, {
       get: {
         formatter: (valueMapping) => valueMapping[Specs.EnvironmentTemperature.name]
       },
     })
-    this.AirConditionDevice.addMIoTCharacteristicListener(SharedFoundation.hap.Characteristic.CoolingThresholdTemperature, {
+    this.AirConditionerDevice.addMIoTCharacteristicListener(SharedFoundation.hap.Characteristic.CoolingThresholdTemperature, {
       get: {
         formatter: (valueMapping) => valueMapping[Specs.AirConditionerTargetTemperature.name]
       },
@@ -78,7 +78,7 @@ export class XiaoMiAirConditionMC5 implements AccessoryPlugin {
         formatter: (value) => value
       },
     })
-    this.AirConditionDevice.addMIoTCharacteristicListener(SharedFoundation.hap.Characteristic.HeatingThresholdTemperature, {
+    this.AirConditionerDevice.addMIoTCharacteristicListener(SharedFoundation.hap.Characteristic.HeatingThresholdTemperature, {
       get: {
         formatter: (valueMapping) => valueMapping[Specs.AirConditionerTargetTemperature.name]
       },
@@ -87,7 +87,7 @@ export class XiaoMiAirConditionMC5 implements AccessoryPlugin {
         formatter: (value) => value
       },
     })
-    this.AirConditionDevice.addMIoTCharacteristicListener(SharedFoundation.hap.Characteristic.SwingMode, {
+    this.AirConditionerDevice.addMIoTCharacteristicListener(SharedFoundation.hap.Characteristic.SwingMode, {
       get: {
         formatter: (valueMapping) => valueMapping[Specs.FanVerticalSwing.name] ? 1 : 0
       },
@@ -113,7 +113,7 @@ export class XiaoMiAirConditionMC5 implements AccessoryPlugin {
   getServices (): Service[] {
     return [
       this.informationService,
-      this.AirConditionService,
+      this.AirConditionerService,
     ]
   }
 

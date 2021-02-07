@@ -1,8 +1,8 @@
-# homebridge-xiaomi-air-condition-mc5
+# homebridge-xiaomi-air-conditioner-mc5
 
-HomeBridge Plugin for XiaoMi Air Condition MC5
+HomeBridge Plugin for XiaoMi Air Conditioner MC5
 
-Homebridge 小米空调插件
+HomeBridge 小米空调插件
 
 ## 对应特征
 小米的空调型号实在太TM多了, 下面这些指的都是同一台机器
@@ -15,24 +15,24 @@ Homebridge 小米空调插件
 
 ## 安装
 ```bash
-npm i homebridge-xiaomi-air-condition-mc5@latest
+npm i homebridge-xiaomi-air-conditioner-mc5@latest
 ```
 
 ## 配置
 ```json
 "platforms": [
    {
-       "platform": "XiaoMiAirConditionMC5",
+       "platform": "XiaoMiAirConditionerMC5",
        "devices": [
            {
-               "name": "AirCondition Name 1",
-               "address": "AirCondition 1 IP Address",
-               "token": "AirCondition 1 Token"
+               "name": "AirConditioner Name 1",
+               "address": "AirConditioner 1 IP Address",
+               "token": "AirConditioner 1 Token"
            },
            {
-               "name": "AirCondition Name 2",
-               "address": "AirCondition 2 IP Address",
-               "token": "AirCondition 2 Token"
+               "name": "AirConditioner Name 2",
+               "address": "AirConditioner 2 IP Address",
+               "token": "AirConditioner 2 Token"
            },
        ]
    }

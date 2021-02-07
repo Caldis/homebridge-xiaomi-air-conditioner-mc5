@@ -1,8 +1,8 @@
-import { XiaoMiAirConditionMC5 } from './XiaoMiAirConditionMC5'
+import { XiaoMiAirConditionerMC5 } from './XiaoMiAirConditionerMC5'
 import { AccessoryPlugin, API, Logging, PlatformConfig, StaticPlatformPlugin, } from 'homebridge'
 import { DeviceConfigs, initMIoT, SharedFoundation } from 'homebridge-miot-devices'
 
-const PLATFORM_NAME = 'XiaoMiAirConditionMC5'
+const PLATFORM_NAME = 'XiaoMiAirConditionerMC5'
 
 export = (api: API) => {
   api.registerPlatform(PLATFORM_NAME, Platform)
@@ -26,7 +26,7 @@ class Platform implements StaticPlatformPlugin {
    * The set of exposed accessories CANNOT change over the lifetime of the plugin!
    */
   accessories (callback: (foundAccessories: AccessoryPlugin[]) => void): void {
-    callback(this.devices.map(identify => new XiaoMiAirConditionMC5({ identify })))
+    callback(this.devices.map(identify => new XiaoMiAirConditionerMC5({ identify })))
     SharedFoundation.log.info(`${PLATFORM_NAME} platform is initialized`)
   }
 }

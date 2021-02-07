@@ -48,4 +48,4 @@ var FanLevelCode;
     FanLevelCode[FanLevelCode["Level6"] = 6] = "Level6";
     FanLevelCode[FanLevelCode["Level7"] = 7] = "Level7";
 })(FanLevelCode = exports.FanLevelCode || (exports.FanLevelCode = {}));
-//# sourceMappingURL=XiaoMiAirConditionMC5.constant.js.map
+//# sourceMappingURL=XiaoMiAirConditionerMC5.constant.js.map
