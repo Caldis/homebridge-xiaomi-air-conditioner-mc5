@@ -1,6 +1,6 @@
-# homebridge-xiaomi-airconditionmc5
+# homebridge-xiaomi-air-condition-mc5
 
-HomeBridge Plugin for XiaoMiAirConditionMC5
+HomeBridge Plugin for XiaoMi Air Condition MC5
 
 Homebridge 小米空调插件
 
@@ -15,7 +15,7 @@ Homebridge 小米空调插件
 
 ## 安装
 ```bash
-npm i homebridge-xiaomi-airconditionmc5@latest
+npm i homebridge-xiaomi-air-condition-mc5@latest
 ```
 
 ## 配置

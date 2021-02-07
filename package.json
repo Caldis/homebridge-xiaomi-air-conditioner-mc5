@@ -1,11 +1,11 @@
 {
-  "version": "1.2.3",
-  "name": "homebridge-xiaomi-airconditionmc5",
-  "description": "HomeBridge XiaoMi AirCondition MC5",
+  "version": "1.0.0",
+  "name": "homebridge-xiaomi-air-condition-mc5",
+  "description": "HomeBridge XiaoMi Air Condition MC5",
   "main": "dist/index.js",
-  "homepage": "https://github.com/Caldis/homebridge-xiaomi-airconditionmc5",
+  "homepage": "https://github.com/Caldis/homebridge-xiaomi-air-condition-mc5",
   "dependencies": {
-    "homebridge-miot-devices": "^1.5.4"
+    "homebridge-miot-devices": "latest"
   },
   "devDependencies": {
     "@types/node": "latest",
