@@ -1,10 +1,12 @@
 "use strict";
 const XiaoMiAirConditionMC5_1 = require("./XiaoMiAirConditionMC5");
+const homebridge_miot_devices_1 = require("homebridge-miot-devices");
 const PLATFORM_NAME = 'XiaoMiAirConditionMC5';
 class Platform {
     constructor(logging, platformConfig, api) {
-        this.hap = api.hap;
-        this.log = logging;
+        // Foundation
+        homebridge_miot_devices_1.initMIoT({ hap: api.hap, log: logging, config: platformConfig.devices });
+        // Devices
         this.devices = platformConfig.devices;
     }
     /*
@@ -14,12 +16,8 @@ class Platform {
      * The set of exposed accessories CANNOT change over the lifetime of the plugin!
      */
     accessories(callback) {
-        callback(this.devices.map(item => new XiaoMiAirConditionMC5_1.XiaoMiAirConditionMC5({
-            hap: this.hap,
-            log: this.log,
-            identify: item,
-        })));
-        this.log.info(`${PLATFORM_NAME} platform is initialized`);
+        callback(this.devices.map(identify => new XiaoMiAirConditionMC5_1.XiaoMiAirConditionMC5({ identify })));
+        homebridge_miot_devices_1.SharedFoundation.log.info(`${PLATFORM_NAME} platform is initialized`);
     }
 }
 module.exports = (api) => {

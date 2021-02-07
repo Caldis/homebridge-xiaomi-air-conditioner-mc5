@@ -1,6 +1,6 @@
-import { DeviceConfigs } from 'miio'
 import { XiaoMiAirConditionMC5 } from './XiaoMiAirConditionMC5'
-import { AccessoryPlugin, API, HAP, Logging, PlatformConfig, StaticPlatformPlugin, } from 'homebridge'
+import { AccessoryPlugin, API, Logging, PlatformConfig, StaticPlatformPlugin, } from 'homebridge'
+import { DeviceConfigs, initMIoT, SharedFoundation } from 'homebridge-miot-devices'
 
 const PLATFORM_NAME = 'XiaoMiAirConditionMC5'
 
@@ -10,13 +10,12 @@ export = (api: API) => {
 
 class Platform implements StaticPlatformPlugin {
 
-  private readonly hap: HAP
-  private readonly log: Logging
   private readonly devices: DeviceConfigs
 
   constructor (logging: Logging, platformConfig: PlatformConfig, api: API) {
-    this.hap = api.hap
-    this.log = logging
+    // Foundation
+    initMIoT({ hap: api.hap, log: logging, config: platformConfig.devices })
+    // Devices
     this.devices = platformConfig.devices
   }
 
@@ -27,13 +26,7 @@ class Platform implements StaticPlatformPlugin {
    * The set of exposed accessories CANNOT change over the lifetime of the plugin!
    */
   accessories (callback: (foundAccessories: AccessoryPlugin[]) => void): void {
-    callback(this.devices.map(item =>
-      new XiaoMiAirConditionMC5({
-        hap: this.hap,
-        log: this.log,
-        identify: item,
-      })
-    ))
-    this.log.info(`${PLATFORM_NAME} platform is initialized`)
+    callback(this.devices.map(identify => new XiaoMiAirConditionMC5({ identify })))
+    SharedFoundation.log.info(`${PLATFORM_NAME} platform is initialized`)
   }
 }

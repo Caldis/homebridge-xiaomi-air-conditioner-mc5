@@ -1,18 +1,13 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.XiaoMiAirConditionMC5 = void 0;
-const MIoTDevice_1 = __importDefault(require("./MIoTDevice"));
 const XiaoMiAirConditionMC5_constant_1 = require("./XiaoMiAirConditionMC5.constant");
+const homebridge_miot_devices_1 = require("homebridge-miot-devices");
 class XiaoMiAirConditionMC5 {
     constructor(props) {
-        this.registrySpecs = () => {
-            Object.values(XiaoMiAirConditionMC5_constant_1.Specs).forEach(i => this.device.addSpec(i));
-        };
-        this.registryCharacters = () => {
-            this.device.addCharacteristicListener(this.hap.Characteristic.Active, {
+        this.AirConditionSetup = () => {
+            this.AirConditionDevice.addMIoTSpec(XiaoMiAirConditionMC5_constant_1.Specs);
+            this.AirConditionDevice.addMIoTCharacteristicListener(homebridge_miot_devices_1.SharedFoundation.hap.Characteristic.Active, {
                 get: {
                     formatter: (valueMapping) => valueMapping[XiaoMiAirConditionMC5_constant_1.Specs.AirConditionerSwitchStatus.name] ? 1 : 0
                 },
@@ -21,7 +16,7 @@ class XiaoMiAirConditionMC5 {
                     formatter: (value) => value === 1
                 },
             });
-            this.device.addCharacteristicListener(this.hap.Characteristic.CurrentHeaterCoolerState, {
+            this.AirConditionDevice.addMIoTCharacteristicListener(homebridge_miot_devices_1.SharedFoundation.hap.Characteristic.CurrentHeaterCoolerState, {
                 get: {
                     formatter: (valueMapping) => {
                         if (!valueMapping[XiaoMiAirConditionMC5_constant_1.Specs.AirConditionerSwitchStatus.name])
@@ -30,7 +25,7 @@ class XiaoMiAirConditionMC5 {
                     }
                 },
             });
-            this.device.addCharacteristicListener(this.hap.Characteristic.TargetHeaterCoolerState, {
+            this.AirConditionDevice.addMIoTCharacteristicListener(homebridge_miot_devices_1.SharedFoundation.hap.Characteristic.TargetHeaterCoolerState, {
                 get: {
                     formatter: (valueMapping) => {
                         if (!valueMapping[XiaoMiAirConditionMC5_constant_1.Specs.AirConditionerSwitchStatus.name])
@@ -43,12 +38,12 @@ class XiaoMiAirConditionMC5 {
                     formatter: (value) => value === 1 ? XiaoMiAirConditionMC5_constant_1.AirConditionerModeCode.Heat : XiaoMiAirConditionMC5_constant_1.AirConditionerModeCode.Cool
                 },
             });
-            this.device.addCharacteristicListener(this.hap.Characteristic.CurrentTemperature, {
+            this.AirConditionDevice.addMIoTCharacteristicListener(homebridge_miot_devices_1.SharedFoundation.hap.Characteristic.CurrentTemperature, {
                 get: {
                     formatter: (valueMapping) => valueMapping[XiaoMiAirConditionMC5_constant_1.Specs.EnvironmentTemperature.name]
                 },
             });
-            this.device.addCharacteristicListener(this.hap.Characteristic.CoolingThresholdTemperature, {
+            this.AirConditionDevice.addMIoTCharacteristicListener(homebridge_miot_devices_1.SharedFoundation.hap.Characteristic.CoolingThresholdTemperature, {
                 get: {
                     formatter: (valueMapping) => valueMapping[XiaoMiAirConditionMC5_constant_1.Specs.AirConditionerTargetTemperature.name]
                 },
@@ -57,7 +52,7 @@ class XiaoMiAirConditionMC5 {
                     formatter: (value) => value
                 },
             });
-            this.device.addCharacteristicListener(this.hap.Characteristic.HeatingThresholdTemperature, {
+            this.AirConditionDevice.addMIoTCharacteristicListener(homebridge_miot_devices_1.SharedFoundation.hap.Characteristic.HeatingThresholdTemperature, {
                 get: {
                     formatter: (valueMapping) => valueMapping[XiaoMiAirConditionMC5_constant_1.Specs.AirConditionerTargetTemperature.name]
                 },
@@ -66,7 +61,7 @@ class XiaoMiAirConditionMC5 {
                     formatter: (value) => value
                 },
             });
-            this.device.addCharacteristicListener(this.hap.Characteristic.SwingMode, {
+            this.AirConditionDevice.addMIoTCharacteristicListener(homebridge_miot_devices_1.SharedFoundation.hap.Characteristic.SwingMode, {
                 get: {
                     formatter: (valueMapping) => valueMapping[XiaoMiAirConditionMC5_constant_1.Specs.FanVerticalSwing.name] ? 1 : 0
                 },
@@ -80,26 +75,21 @@ class XiaoMiAirConditionMC5 {
         this.name = props.identify.name;
         this.token = props.identify.token;
         this.address = props.identify.address;
-        // Foundation
-        this.hap = props.hap;
-        this.log = props.log;
-        // Services
-        this.informationService = new props.hap.Service.AccessoryInformation()
-            .setCharacteristic(this.hap.Characteristic.Manufacturer, 'XiaoMi')
-            .setCharacteristic(this.hap.Characteristic.Model, 'MC5');
-        this.characteristicsService = new this.hap.Service.HeaterCooler(props.identify.name);
-        // device
-        this.device = new MIoTDevice_1.default({ ...props, characteristicsService: this.characteristicsService });
-        // Registry
-        this.registrySpecs();
-        this.registryCharacters();
+        // Information
+        this.informationService = new homebridge_miot_devices_1.SharedFoundation.hap.Service.AccessoryInformation()
+            .setCharacteristic(homebridge_miot_devices_1.SharedFoundation.hap.Characteristic.Manufacturer, 'XiaoMi')
+            .setCharacteristic(homebridge_miot_devices_1.SharedFoundation.hap.Characteristic.Model, 'MC5');
+        // AirCondition
+        this.AirConditionService = new homebridge_miot_devices_1.SharedFoundation.hap.Service.HeaterCooler(props.identify.name);
+        this.AirConditionDevice = new homebridge_miot_devices_1.MIoTDevice({ ...props, characteristicsService: this.AirConditionService });
+        this.AirConditionSetup();
     }
     /*
      * This method is optional to implement. It is called when HomeKit ask to identify the accessory.
      * Typical this only ever happens at the pairing process.
      */
     identify() {
-        this.log.info(`Identifying ${this.name} ${this.address}`);
+        homebridge_miot_devices_1.SharedFoundation.log.info(`Identifying ${this.name} ${this.address}`);
     }
     /*
      * This method is called directly after creation of this instance.
@@ -108,7 +98,7 @@ class XiaoMiAirConditionMC5 {
     getServices() {
         return [
             this.informationService,
-            this.characteristicsService,
+            this.AirConditionService,
         ];
     }
 }
