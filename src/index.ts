@@ -1,6 +1,6 @@
 import { XiaoMiAirConditionerMC5 } from './XiaoMiAirConditionerMC5'
 import { AccessoryPlugin, API, Logging, PlatformConfig, StaticPlatformPlugin, } from 'homebridge'
-import { DeviceConfigs, initMIoT, SharedFoundation } from 'homebridge-miot-devices'
+import { DeviceConfigs, initMiDevice, SharedFoundation } from 'homebridge-mi-devices'
 
 const PLATFORM_NAME = 'XiaoMiAirConditionerMC5'
 
@@ -14,7 +14,7 @@ class Platform implements StaticPlatformPlugin {
 
   constructor (logging: Logging, platformConfig: PlatformConfig, api: API) {
     // Foundation
-    initMIoT({ hap: api.hap, log: logging, config: platformConfig.devices })
+    initMiDevice({ hap: api.hap, log: logging })
     // Devices
     this.devices = platformConfig.devices
   }
