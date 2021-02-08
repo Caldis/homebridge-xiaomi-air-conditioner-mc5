@@ -1,5 +1,5 @@
 {
-  "version": "1.1.0",
+  "version": "1.2.0",
   "name": "homebridge-xiaomi-air-conditioner-mc5",
   "description": "HomeBridge XiaoMi Air Conditioner MC5",
   "main": "dist/index.js",

@@ -6,8 +6,7 @@ const homebridge_mi_devices_1 = require("homebridge-mi-devices");
 class XiaoMiAirConditionerMC5 {
     constructor(props) {
         this.AirConditionerSetup = () => {
-            this.AirConditionerDevice.addSpec(XiaoMiAirConditionerMC5_constant_1.Specs);
-            this.AirConditionerDevice.addCharacteristicListener(homebridge_mi_devices_1.SharedFoundation.hap.Characteristic.Active, {
+            this.AirConditionerDevice.addCharacteristicListener(homebridge_mi_devices_1.Shared.hap.Characteristic.Active, {
                 get: {
                     formatter: (valueMapping) => valueMapping[XiaoMiAirConditionerMC5_constant_1.Specs.AirConditionerSwitchStatus.name] ? 1 : 0
                 },
@@ -16,7 +15,7 @@ class XiaoMiAirConditionerMC5 {
                     formatter: (value) => value === 1
                 },
             });
-            this.AirConditionerDevice.addCharacteristicListener(homebridge_mi_devices_1.SharedFoundation.hap.Characteristic.CurrentHeaterCoolerState, {
+            this.AirConditionerDevice.addCharacteristicListener(homebridge_mi_devices_1.Shared.hap.Characteristic.CurrentHeaterCoolerState, {
                 get: {
                     formatter: (valueMapping) => {
                         if (!valueMapping[XiaoMiAirConditionerMC5_constant_1.Specs.AirConditionerSwitchStatus.name])
@@ -25,7 +24,7 @@ class XiaoMiAirConditionerMC5 {
                     }
                 },
             });
-            this.AirConditionerDevice.addCharacteristicListener(homebridge_mi_devices_1.SharedFoundation.hap.Characteristic.TargetHeaterCoolerState, {
+            this.AirConditionerDevice.addCharacteristicListener(homebridge_mi_devices_1.Shared.hap.Characteristic.TargetHeaterCoolerState, {
                 get: {
                     formatter: (valueMapping) => {
                         if (!valueMapping[XiaoMiAirConditionerMC5_constant_1.Specs.AirConditionerSwitchStatus.name])
@@ -38,12 +37,12 @@ class XiaoMiAirConditionerMC5 {
                     formatter: (value) => value === 1 ? XiaoMiAirConditionerMC5_constant_1.AirConditionerModeCode.Heat : XiaoMiAirConditionerMC5_constant_1.AirConditionerModeCode.Cool
                 },
             });
-            this.AirConditionerDevice.addCharacteristicListener(homebridge_mi_devices_1.SharedFoundation.hap.Characteristic.CurrentTemperature, {
+            this.AirConditionerDevice.addCharacteristicListener(homebridge_mi_devices_1.Shared.hap.Characteristic.CurrentTemperature, {
                 get: {
                     formatter: (valueMapping) => valueMapping[XiaoMiAirConditionerMC5_constant_1.Specs.EnvironmentTemperature.name]
                 },
             });
-            this.AirConditionerDevice.addCharacteristicListener(homebridge_mi_devices_1.SharedFoundation.hap.Characteristic.CoolingThresholdTemperature, {
+            this.AirConditionerDevice.addCharacteristicListener(homebridge_mi_devices_1.Shared.hap.Characteristic.CoolingThresholdTemperature, {
                 get: {
                     formatter: (valueMapping) => valueMapping[XiaoMiAirConditionerMC5_constant_1.Specs.AirConditionerTargetTemperature.name]
                 },
@@ -52,7 +51,7 @@ class XiaoMiAirConditionerMC5 {
                     formatter: (value) => value
                 },
             });
-            this.AirConditionerDevice.addCharacteristicListener(homebridge_mi_devices_1.SharedFoundation.hap.Characteristic.HeatingThresholdTemperature, {
+            this.AirConditionerDevice.addCharacteristicListener(homebridge_mi_devices_1.Shared.hap.Characteristic.HeatingThresholdTemperature, {
                 get: {
                     formatter: (valueMapping) => valueMapping[XiaoMiAirConditionerMC5_constant_1.Specs.AirConditionerTargetTemperature.name]
                 },
@@ -61,7 +60,7 @@ class XiaoMiAirConditionerMC5 {
                     formatter: (value) => value
                 },
             });
-            this.AirConditionerDevice.addCharacteristicListener(homebridge_mi_devices_1.SharedFoundation.hap.Characteristic.SwingMode, {
+            this.AirConditionerDevice.addCharacteristicListener(homebridge_mi_devices_1.Shared.hap.Characteristic.SwingMode, {
                 get: {
                     formatter: (valueMapping) => valueMapping[XiaoMiAirConditionerMC5_constant_1.Specs.FanVerticalSwing.name] ? 1 : 0
                 },
@@ -76,13 +75,13 @@ class XiaoMiAirConditionerMC5 {
         this.token = props.identify.token;
         this.address = props.identify.address;
         // Information
-        this.informationService = new homebridge_mi_devices_1.SharedFoundation.hap.Service.AccessoryInformation()
-            .setCharacteristic(homebridge_mi_devices_1.SharedFoundation.hap.Characteristic.Manufacturer, 'XiaoMi')
-            .setCharacteristic(homebridge_mi_devices_1.SharedFoundation.hap.Characteristic.Model, 'MC5');
+        this.informationService = new homebridge_mi_devices_1.Shared.hap.Service.AccessoryInformation()
+            .setCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.Manufacturer, 'XiaoMi')
+            .setCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.Model, 'MC5');
         // AirConditioner
         const AirConditionerName = props.identify.name;
-        this.AirConditionerService = new homebridge_mi_devices_1.SharedFoundation.hap.Service.HeaterCooler(AirConditionerName);
-        this.AirConditionerDevice = new homebridge_mi_devices_1.MIoTDevice({ ...props, characteristicsName: AirConditionerName, characteristicsService: this.AirConditionerService });
+        this.AirConditionerService = new homebridge_mi_devices_1.Shared.hap.Service.HeaterCooler(AirConditionerName);
+        this.AirConditionerDevice = new homebridge_mi_devices_1.MIoTDevice({ ...props, service: this.AirConditionerService, specs: XiaoMiAirConditionerMC5_constant_1.Specs });
         this.AirConditionerSetup();
     }
     /*
@@ -90,7 +89,7 @@ class XiaoMiAirConditionerMC5 {
      * Typical this only ever happens at the pairing process.
      */
     identify() {
-        homebridge_mi_devices_1.SharedFoundation.log.info(`Identifying ${this.name} ${this.address}`);
+        homebridge_mi_devices_1.Shared.log.info(`Identifying ${this.name} ${this.address}`);
     }
     /*
      * This method is called directly after creation of this instance.

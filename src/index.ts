@@ -1,6 +1,6 @@
 import { XiaoMiAirConditionerMC5 } from './XiaoMiAirConditionerMC5'
 import { AccessoryPlugin, API, Logging, PlatformConfig, StaticPlatformPlugin, } from 'homebridge'
-import { DeviceConfigs, initMiDevice, SharedFoundation } from 'homebridge-mi-devices'
+import { DeviceConfigs, initMiDevice, Shared } from 'homebridge-mi-devices'
 
 const PLATFORM_NAME = 'XiaoMiAirConditionerMC5'
 
@@ -27,6 +27,6 @@ class Platform implements StaticPlatformPlugin {
    */
   accessories (callback: (foundAccessories: AccessoryPlugin[]) => void): void {
     callback(this.devices.map(identify => new XiaoMiAirConditionerMC5({ identify })))
-    SharedFoundation.log.info(`${PLATFORM_NAME} platform is initialized`)
+    Shared.log.info(`${PLATFORM_NAME} platform is initialized`)
   }
 }

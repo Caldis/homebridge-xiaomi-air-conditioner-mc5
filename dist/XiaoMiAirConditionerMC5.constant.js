@@ -8,7 +8,7 @@ exports.Specs = {
     // 运行模式
     AirConditionerMode: { name: 'AirConditionerMode', siid: 2, piid: 2 },
     // 目标温度
-    AirConditionerTargetTemperature: { name: 'AirConditionerMode', siid: 2, piid: 4 },
+    AirConditionerTargetTemperature: { name: 'AirConditionerTargetTemperature', siid: 2, piid: 4 },
     // 节能模式
     AirConditionerECOMode: { name: 'AirConditionerECOMode', siid: 2, piid: 7 },
     // 制热模式

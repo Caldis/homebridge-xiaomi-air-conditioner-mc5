@@ -17,7 +17,7 @@ class Platform {
      */
     accessories(callback) {
         callback(this.devices.map(identify => new XiaoMiAirConditionerMC5_1.XiaoMiAirConditionerMC5({ identify })));
-        homebridge_mi_devices_1.SharedFoundation.log.info(`${PLATFORM_NAME} platform is initialized`);
+        homebridge_mi_devices_1.Shared.log.info(`${PLATFORM_NAME} platform is initialized`);
     }
 }
 module.exports = (api) => {

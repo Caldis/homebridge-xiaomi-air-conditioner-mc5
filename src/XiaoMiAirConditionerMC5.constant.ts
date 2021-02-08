@@ -5,25 +5,25 @@ export const Specs = {
   // 运行模式
   AirConditionerMode: { name: 'AirConditionerMode', siid: 2, piid: 2 },
   // 目标温度
-  AirConditionerTargetTemperature: { name: 'AirConditionerMode', siid: 2, piid: 4 },
+  AirConditionerTargetTemperature: { name: 'AirConditionerTargetTemperature', siid: 2, piid: 4 },
   // 节能模式
-  AirConditionerECOMode:{ name: 'AirConditionerECOMode', siid: 2, piid: 7 },
+  AirConditionerECOMode: { name: 'AirConditionerECOMode', siid: 2, piid: 7 },
   // 制热模式
-  AirConditionerHeaterMode:{ name: 'AirConditionerHeaterMode', siid: 2, piid: 9 },
+  AirConditionerHeaterMode: { name: 'AirConditionerHeaterMode', siid: 2, piid: 9 },
   // 除湿模式
-  AirConditionerDryerMode:{ name: 'AirConditionerDryerMode', siid: 2, piid: 10 },
+  AirConditionerDryerMode: { name: 'AirConditionerDryerMode', siid: 2, piid: 10 },
   // 睡眠模式
-  AirConditionerSleepMode:{ name: 'AirConditionerSleepMode', siid: 2, piid: 11 },
+  AirConditionerSleepMode: { name: 'AirConditionerSleepMode', siid: 2, piid: 11 },
   // 风扇级别
-  FanLevel:{ name: 'FanLevel', siid: 3, piid: 2 },
+  FanLevel: { name: 'FanLevel', siid: 3, piid: 2 },
   // 风扇摆动
-  FanVerticalSwing:{ name: 'FanVerticalSwing', siid: 3, piid: 4 },
+  FanVerticalSwing: { name: 'FanVerticalSwing', siid: 3, piid: 4 },
   // 环境温度
-  EnvironmentTemperature:{ name: 'EnvironmentTemperature', siid: 4, piid: 7 },
+  EnvironmentTemperature: { name: 'EnvironmentTemperature', siid: 4, piid: 7 },
   // 提示声音
-  Alarm:{ name: 'Alarm', siid: 5, piid: 1 },
+  Alarm: { name: 'Alarm', siid: 5, piid: 1 },
   // 指示照明
-  IndicatorLightSwitchStatus:{ name: 'IndicatorLightSwitchStatus', siid: 6, piid: 1 },
+  IndicatorLightSwitchStatus: { name: 'IndicatorLightSwitchStatus', siid: 6, piid: 1 },
 }
 
 // 运行模式枚举
