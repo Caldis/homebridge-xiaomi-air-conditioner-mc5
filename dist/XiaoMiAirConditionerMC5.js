@@ -167,14 +167,14 @@ class XiaoMiAirConditionerMC5 {
         this.AirConditionerDevice = new homebridge_mi_devices_1.MIoTDevice({ ...props, service: this.AirConditionerService, specs: XiaoMiAirConditionerMC5_constant_1.Specs });
         this.AirConditionerSetup();
         // AirConditioner: Extra Modes
-        this.AirConditionerECOModeService = new homebridge_mi_devices_1.Shared.hap.Service.Switch(`${props.identify.name}.ECOMode`);
-        this.AirConditionerECOModeSetup(this.AirConditionerECOModeService);
+        // this.AirConditionerECOModeService = new Shared.hap.Service.Switch(`${props.identify.name}.ECOMode`)
+        // this.AirConditionerECOModeSetup(this.AirConditionerECOModeService)
         this.AirConditionerHeaterModeService = new homebridge_mi_devices_1.Shared.hap.Service.Switch(`${props.identify.name}.HeaterMode`);
         this.AirConditionerHeaterModeSetup(this.AirConditionerHeaterModeService);
-        this.AirConditionerDryerModeService = new homebridge_mi_devices_1.Shared.hap.Service.Switch(`${props.identify.name}.DryerMode`);
-        this.AirConditionerDryerModeSetup(this.AirConditionerDryerModeService);
-        this.AirConditionerSleepModeService = new homebridge_mi_devices_1.Shared.hap.Service.Switch(`${props.identify.name}.SleepMode`);
-        this.AirConditionerSleepModeSetup(this.AirConditionerSleepModeService);
+        // this.AirConditionerDryerModeService = new Shared.hap.Service.Switch(`${props.identify.name}.DryerMode`)
+        // this.AirConditionerDryerModeSetup(this.AirConditionerDryerModeService)
+        // this.AirConditionerSleepModeService = new Shared.hap.Service.Switch(`${props.identify.name}.SleepMode`)
+        // this.AirConditionerSleepModeSetup(this.AirConditionerSleepModeService)
     }
     /*
      * This method is optional to implement. It is called when HomeKit ask to identify the accessory.
@@ -191,10 +191,8 @@ class XiaoMiAirConditionerMC5 {
         return [
             this.informationService,
             this.AirConditionerService,
-            this.AirConditionerECOModeService,
+            // this.AirConditionerECOModeService,
             this.AirConditionerHeaterModeService,
-            this.AirConditionerDryerModeService,
-            this.AirConditionerSleepModeService,
         ];
     }
 }
