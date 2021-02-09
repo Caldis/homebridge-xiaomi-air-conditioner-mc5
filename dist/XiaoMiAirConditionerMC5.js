@@ -226,6 +226,8 @@ class XiaoMiAirConditionerMC5 {
             this.AirConditionerHeaterModeService,
             this.AirConditionerDryerModeService,
             this.AirConditionerSleepModeService,
+            this.AirConditionerAlarmService,
+            this.AirConditionerIndicatorLightService,
         ];
     }
 }

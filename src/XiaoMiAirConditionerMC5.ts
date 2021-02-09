@@ -251,6 +251,8 @@ export class XiaoMiAirConditionerMC5 implements AccessoryPlugin {
       this.AirConditionerHeaterModeService,
       this.AirConditionerDryerModeService,
       this.AirConditionerSleepModeService,
+      this.AirConditionerAlarmService,
+      this.AirConditionerIndicatorLightService,
     ]
   }
 
