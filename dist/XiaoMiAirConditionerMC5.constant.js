@@ -1,33 +1,34 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.FanLevelCode = exports.AirConditionerModeCode = exports.Specs = void 0;
+exports.FanLevelCodeVolumeMapping = exports.FanLevelCode = exports.AirConditionerModeCode = exports.Specs = void 0;
 // 特性信息
-exports.Specs = {
+const homebridge_mi_devices_1 = require("homebridge-mi-devices");
+exports.Specs = homebridge_mi_devices_1.formatMIoTSpecs({
     // 启动状态
-    AirConditionerSwitchStatus: { name: 'AirConditionerSwitchStatus', siid: 2, piid: 1 },
+    AirConditionerSwitchStatus: { siid: 2, piid: 1 },
     // 运行模式
-    AirConditionerMode: { name: 'AirConditionerMode', siid: 2, piid: 2 },
+    AirConditionerMode: { siid: 2, piid: 2 },
     // 目标温度
-    AirConditionerTargetTemperature: { name: 'AirConditionerTargetTemperature', siid: 2, piid: 4 },
+    AirConditionerTargetTemperature: { siid: 2, piid: 4 },
     // 节能模式
-    AirConditionerECOMode: { name: 'AirConditionerECOMode', siid: 2, piid: 7 },
+    AirConditionerECOMode: { siid: 2, piid: 7 },
     // 制热模式
-    AirConditionerHeaterMode: { name: 'AirConditionerHeaterMode', siid: 2, piid: 9 },
+    AirConditionerHeaterMode: { siid: 2, piid: 9 },
     // 除湿模式
-    AirConditionerDryerMode: { name: 'AirConditionerDryerMode', siid: 2, piid: 10 },
+    AirConditionerDryerMode: { siid: 2, piid: 10 },
     // 睡眠模式
-    AirConditionerSleepMode: { name: 'AirConditionerSleepMode', siid: 2, piid: 11 },
+    AirConditionerSleepMode: { siid: 2, piid: 11 },
     // 风扇级别
-    FanLevel: { name: 'FanLevel', siid: 3, piid: 2 },
+    FanLevel: { siid: 3, piid: 2 },
     // 风扇摆动
-    FanVerticalSwing: { name: 'FanVerticalSwing', siid: 3, piid: 4 },
+    FanVerticalSwing: { siid: 3, piid: 4 },
     // 环境温度
-    EnvironmentTemperature: { name: 'EnvironmentTemperature', siid: 4, piid: 7 },
+    EnvironmentTemperature: { siid: 4, piid: 7 },
     // 提示声音
-    Alarm: { name: 'Alarm', siid: 5, piid: 1 },
+    Alarm: { siid: 5, piid: 1 },
     // 指示照明
-    IndicatorLightSwitchStatus: { name: 'IndicatorLightSwitchStatus', siid: 6, piid: 1 },
-};
+    IndicatorLightSwitchStatus: { siid: 6, piid: 1 },
+});
 // 运行模式枚举
 var AirConditionerModeCode;
 (function (AirConditionerModeCode) {
@@ -48,4 +49,14 @@ var FanLevelCode;
     FanLevelCode[FanLevelCode["Level6"] = 6] = "Level6";
     FanLevelCode[FanLevelCode["Level7"] = 7] = "Level7";
 })(FanLevelCode = exports.FanLevelCode || (exports.FanLevelCode = {}));
+exports.FanLevelCodeVolumeMapping = {
+    [FanLevelCode.Auto]: 0,
+    [FanLevelCode.Level1]: 14,
+    [FanLevelCode.Level2]: 28,
+    [FanLevelCode.Level3]: 42,
+    [FanLevelCode.Level4]: 56,
+    [FanLevelCode.Level5]: 70,
+    [FanLevelCode.Level6]: 84,
+    [FanLevelCode.Level7]: 100,
+};
 //# sourceMappingURL=XiaoMiAirConditionerMC5.constant.js.map
