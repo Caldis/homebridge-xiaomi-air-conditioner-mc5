@@ -167,8 +167,8 @@ class XiaoMiAirConditionerMC5 {
         this.AirConditionerDevice = new homebridge_mi_devices_1.MIoTDevice({ ...props, service: this.AirConditionerService, specs: XiaoMiAirConditionerMC5_constant_1.Specs });
         this.AirConditionerSetup();
         // AirConditioner: Extra Modes
-        // this.AirConditionerECOModeService = new Shared.hap.Service.Switch(`${props.identify.name}.ECOMode`)
-        // this.AirConditionerECOModeSetup(this.AirConditionerECOModeService)
+        this.AirConditionerECOModeService = new homebridge_mi_devices_1.Shared.hap.Service.Switch(`${props.identify.name}.ECOMode`);
+        this.AirConditionerECOModeSetup(this.AirConditionerECOModeService);
         this.AirConditionerHeaterModeService = new homebridge_mi_devices_1.Shared.hap.Service.Switch(`${props.identify.name}.HeaterMode`);
         this.AirConditionerHeaterModeSetup(this.AirConditionerHeaterModeService);
         // this.AirConditionerDryerModeService = new Shared.hap.Service.Switch(`${props.identify.name}.DryerMode`)
@@ -191,7 +191,7 @@ class XiaoMiAirConditionerMC5 {
         return [
             this.informationService,
             this.AirConditionerService,
-            // this.AirConditionerECOModeService,
+            this.AirConditionerECOModeService,
             this.AirConditionerHeaterModeService,
         ];
     }

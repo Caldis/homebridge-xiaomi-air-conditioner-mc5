@@ -20,7 +20,7 @@ export class XiaoMiAirConditionerMC5 implements AccessoryPlugin {
   // Services
   private readonly informationService: Service
   private readonly AirConditionerService: Service
-  // private readonly AirConditionerECOModeService: Service
+  private readonly AirConditionerECOModeService: Service
   private readonly AirConditionerHeaterModeService: Service
   // private readonly AirConditionerDryerModeService: Service
   // private readonly AirConditionerSleepModeService: Service
@@ -42,8 +42,8 @@ export class XiaoMiAirConditionerMC5 implements AccessoryPlugin {
     this.AirConditionerDevice = new MIoTDevice({ ...props, service: this.AirConditionerService, specs: Specs })
     this.AirConditionerSetup()
     // AirConditioner: Extra Modes
-    // this.AirConditionerECOModeService = new Shared.hap.Service.Switch(`${props.identify.name}.ECOMode`)
-    // this.AirConditionerECOModeSetup(this.AirConditionerECOModeService)
+    this.AirConditionerECOModeService = new Shared.hap.Service.Switch(`${props.identify.name}.ECOMode`)
+    this.AirConditionerECOModeSetup(this.AirConditionerECOModeService)
     this.AirConditionerHeaterModeService = new Shared.hap.Service.Switch(`${props.identify.name}.HeaterMode`)
     this.AirConditionerHeaterModeSetup(this.AirConditionerHeaterModeService)
     // this.AirConditionerDryerModeService = new Shared.hap.Service.Switch(`${props.identify.name}.DryerMode`)
@@ -212,7 +212,7 @@ export class XiaoMiAirConditionerMC5 implements AccessoryPlugin {
     return [
       this.informationService,
       this.AirConditionerService,
-      // this.AirConditionerECOModeService,
+      this.AirConditionerECOModeService,
       this.AirConditionerHeaterModeService,
       // this.AirConditionerDryerModeService,
       // this.AirConditionerSleepModeService,
