@@ -24,6 +24,8 @@ export class XiaoMiAirConditionerMC5 implements AccessoryPlugin {
   private readonly AirConditionerHeaterModeService: Service
   private readonly AirConditionerDryerModeService: Service
   private readonly AirConditionerSleepModeService: Service
+  private readonly AirConditionerAlarmService: Service
+  private readonly AirConditionerIndicatorLightService: Service
   // Device
   private AirConditionerDevice: MIoTDevice
 
@@ -50,6 +52,13 @@ export class XiaoMiAirConditionerMC5 implements AccessoryPlugin {
     this.AirConditionerDryerModeSetup(this.AirConditionerDryerModeService)
     this.AirConditionerSleepModeService = new Shared.hap.Service.Switch(`${props.identify.name}.SleepMode`, 'SleepMode')
     this.AirConditionerSleepModeSetup(this.AirConditionerSleepModeService)
+    this.AirConditionerSleepModeService = new Shared.hap.Service.Switch(`${props.identify.name}.SleepMode`, 'SleepMode')
+    this.AirConditionerSleepModeSetup(this.AirConditionerSleepModeService)
+    // AirConditioner: Sound & Light
+    this.AirConditionerAlarmService = new Shared.hap.Service.Switch(`${props.identify.name}.Alarm`, 'Alarm')
+    this.AirConditionerAlarmSetup(this.AirConditionerAlarmService)
+    this.AirConditionerIndicatorLightService = new Shared.hap.Service.Switch(`${props.identify.name}.IndicatorLight`, 'IndicatorLight')
+    this.AirConditionerIndicatorLightSetup(this.AirConditionerIndicatorLightService)
   }
 
   AirConditionerSetup = () => {
@@ -191,6 +200,32 @@ export class XiaoMiAirConditionerMC5 implements AccessoryPlugin {
       },
       set: {
         property: Specs.AirConditionerSleepMode.name,
+        formatter: (value) => !!value
+      },
+    })
+  }
+  AirConditionerAlarmSetup = (service: Service) => {
+    this.AirConditionerDevice.addCharacteristicListener(Shared.hap.Characteristic.On, {
+      service,
+      get: {
+        formatter: (valueMapping) =>
+          valueMapping[Specs.Alarm.name] ? 1 : 0
+      },
+      set: {
+        property: Specs.Alarm.name,
+        formatter: (value) => !!value
+      },
+    })
+  }
+  AirConditionerIndicatorLightSetup = (service: Service) => {
+    this.AirConditionerDevice.addCharacteristicListener(Shared.hap.Characteristic.On, {
+      service,
+      get: {
+        formatter: (valueMapping) =>
+          valueMapping[Specs.IndicatorLightSwitchStatus.name] ? 1 : 0
+      },
+      set: {
+        property: Specs.IndicatorLightSwitchStatus.name,
         formatter: (value) => !!value
       },
     })

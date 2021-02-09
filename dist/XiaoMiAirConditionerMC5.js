@@ -153,6 +153,30 @@ class XiaoMiAirConditionerMC5 {
                 },
             });
         };
+        this.AirConditionerAlarmSetup = (service) => {
+            this.AirConditionerDevice.addCharacteristicListener(homebridge_mi_devices_1.Shared.hap.Characteristic.On, {
+                service,
+                get: {
+                    formatter: (valueMapping) => valueMapping[XiaoMiAirConditionerMC5_constant_1.Specs.Alarm.name] ? 1 : 0
+                },
+                set: {
+                    property: XiaoMiAirConditionerMC5_constant_1.Specs.Alarm.name,
+                    formatter: (value) => !!value
+                },
+            });
+        };
+        this.AirConditionerIndicatorLightSetup = (service) => {
+            this.AirConditionerDevice.addCharacteristicListener(homebridge_mi_devices_1.Shared.hap.Characteristic.On, {
+                service,
+                get: {
+                    formatter: (valueMapping) => valueMapping[XiaoMiAirConditionerMC5_constant_1.Specs.IndicatorLightSwitchStatus.name] ? 1 : 0
+                },
+                set: {
+                    property: XiaoMiAirConditionerMC5_constant_1.Specs.IndicatorLightSwitchStatus.name,
+                    formatter: (value) => !!value
+                },
+            });
+        };
         // Requirement
         this.name = props.identify.name;
         this.token = props.identify.token;
@@ -167,14 +191,21 @@ class XiaoMiAirConditionerMC5 {
         this.AirConditionerDevice = new homebridge_mi_devices_1.MIoTDevice({ ...props, service: this.AirConditionerService, specs: XiaoMiAirConditionerMC5_constant_1.Specs });
         this.AirConditionerSetup();
         // AirConditioner: Extra Modes
-        this.AirConditionerECOModeService = new homebridge_mi_devices_1.Shared.hap.Service.Switch(`${props.identify.name}`, 'ECOMode');
+        this.AirConditionerECOModeService = new homebridge_mi_devices_1.Shared.hap.Service.Switch(`${props.identify.name}.ECOMode`, 'ECOMode');
         this.AirConditionerECOModeSetup(this.AirConditionerECOModeService);
-        this.AirConditionerHeaterModeService = new homebridge_mi_devices_1.Shared.hap.Service.Switch(`${props.identify.name}`, 'HeaterMode');
+        this.AirConditionerHeaterModeService = new homebridge_mi_devices_1.Shared.hap.Service.Switch(`${props.identify.name}.HeaterMode`, 'HeaterMode');
         this.AirConditionerHeaterModeSetup(this.AirConditionerHeaterModeService);
-        this.AirConditionerDryerModeService = new homebridge_mi_devices_1.Shared.hap.Service.Switch(`${props.identify.name}`, 'DryerMode');
+        this.AirConditionerDryerModeService = new homebridge_mi_devices_1.Shared.hap.Service.Switch(`${props.identify.name}.DryerMode`, 'DryerMode');
         this.AirConditionerDryerModeSetup(this.AirConditionerDryerModeService);
-        this.AirConditionerSleepModeService = new homebridge_mi_devices_1.Shared.hap.Service.Switch(`${props.identify.name}`, 'SleepMode');
+        this.AirConditionerSleepModeService = new homebridge_mi_devices_1.Shared.hap.Service.Switch(`${props.identify.name}.SleepMode`, 'SleepMode');
         this.AirConditionerSleepModeSetup(this.AirConditionerSleepModeService);
+        this.AirConditionerSleepModeService = new homebridge_mi_devices_1.Shared.hap.Service.Switch(`${props.identify.name}.SleepMode`, 'SleepMode');
+        this.AirConditionerSleepModeSetup(this.AirConditionerSleepModeService);
+        // AirConditioner: Sound & Light
+        this.AirConditionerAlarmService = new homebridge_mi_devices_1.Shared.hap.Service.Switch(`${props.identify.name}.Alarm`, 'Alarm');
+        this.AirConditionerAlarmSetup(this.AirConditionerAlarmService);
+        this.AirConditionerIndicatorLightService = new homebridge_mi_devices_1.Shared.hap.Service.Switch(`${props.identify.name}.IndicatorLight`, 'IndicatorLight');
+        this.AirConditionerIndicatorLightSetup(this.AirConditionerIndicatorLightService);
     }
     /*
      * This method is optional to implement. It is called when HomeKit ask to identify the accessory.
