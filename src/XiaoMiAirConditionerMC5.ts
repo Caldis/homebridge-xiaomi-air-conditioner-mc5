@@ -42,13 +42,13 @@ export class XiaoMiAirConditionerMC5 implements AccessoryPlugin {
     this.AirConditionerDevice = new MIoTDevice({ ...props, service: this.AirConditionerService, specs: Specs })
     this.AirConditionerSetup()
     // AirConditioner: Extra Modes
-    this.AirConditionerECOModeService = new Shared.hap.Service.Switch(`${props.identify.name}`, 'ECOMode')
+    this.AirConditionerECOModeService = new Shared.hap.Service.Switch(`${props.identify.name}.ECOMode`, 'ECOMode')
     this.AirConditionerECOModeSetup(this.AirConditionerECOModeService)
-    this.AirConditionerHeaterModeService = new Shared.hap.Service.Switch(`${props.identify.name}`, 'HeaterMode')
+    this.AirConditionerHeaterModeService = new Shared.hap.Service.Switch(`${props.identify.name}.HeaterMode`, 'HeaterMode')
     this.AirConditionerHeaterModeSetup(this.AirConditionerHeaterModeService)
-    this.AirConditionerDryerModeService = new Shared.hap.Service.Switch(`${props.identify.name}`, 'DryerMode')
+    this.AirConditionerDryerModeService = new Shared.hap.Service.Switch(`${props.identify.name}.DryerMode`, 'DryerMode')
     this.AirConditionerDryerModeSetup(this.AirConditionerDryerModeService)
-    this.AirConditionerSleepModeService = new Shared.hap.Service.Switch(`${props.identify.name}`, 'SleepMode')
+    this.AirConditionerSleepModeService = new Shared.hap.Service.Switch(`${props.identify.name}.SleepMode`, 'SleepMode')
     this.AirConditionerSleepModeSetup(this.AirConditionerSleepModeService)
   }
 
