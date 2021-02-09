@@ -1,4 +1,4 @@
-import { AccessoryPlugin, Service } from 'homebridge'
+import { AccessoryPlugin, Service, Categories } from 'homebridge'
 import {
   AirConditionerModeCode,
   FanLevelCode,
@@ -24,6 +24,8 @@ export class XiaoMiAirConditionerMC5 implements AccessoryPlugin {
   private readonly AirConditionerHeaterModeService: Service
   private readonly AirConditionerDryerModeService: Service
   private readonly AirConditionerSleepModeService: Service
+  private readonly AirConditionerAlarmService: Service
+  private readonly AirConditionerIndicatorLightService: Service
   // Device
   private AirConditionerDevice: MIoTDevice
 
@@ -34,6 +36,7 @@ export class XiaoMiAirConditionerMC5 implements AccessoryPlugin {
     this.address = props.identify.address
     // Information
     this.informationService = new Shared.hap.Service.AccessoryInformation()
+      .setCharacteristic(Shared.hap.Characteristic.Category, Categories.AIR_CONDITIONER)
       .setCharacteristic(Shared.hap.Characteristic.Manufacturer, 'XiaoMi')
       .setCharacteristic(Shared.hap.Characteristic.Model, 'MC5')
     // AirConditioner
@@ -41,14 +44,21 @@ export class XiaoMiAirConditionerMC5 implements AccessoryPlugin {
     this.AirConditionerDevice = new MIoTDevice({ ...props, service: this.AirConditionerService, specs: Specs })
     this.AirConditionerSetup()
     // AirConditioner: Extra Modes
-    this.AirConditionerECOModeService = new Shared.hap.Service.Switch(`${props.identify.name}.ECOMode`)
+    this.AirConditionerECOModeService = new Shared.hap.Service.Switch(`${props.identify.name}.ECOMode`, 'ECOMode')
     this.AirConditionerECOModeSetup(this.AirConditionerECOModeService)
-    this.AirConditionerHeaterModeService = new Shared.hap.Service.Switch(`${props.identify.name}.HeaterMode`)
+    this.AirConditionerHeaterModeService = new Shared.hap.Service.Switch(`${props.identify.name}.HeaterMode`, 'HeaterMode')
     this.AirConditionerHeaterModeSetup(this.AirConditionerHeaterModeService)
-    this.AirConditionerDryerModeService = new Shared.hap.Service.Switch(`${props.identify.name}.DryerMode`)
+    this.AirConditionerDryerModeService = new Shared.hap.Service.Switch(`${props.identify.name}.DryerMode`, 'DryerMode')
     this.AirConditionerDryerModeSetup(this.AirConditionerDryerModeService)
-    this.AirConditionerSleepModeService = new Shared.hap.Service.Switch(`${props.identify.name}.SleepMode`)
+    this.AirConditionerSleepModeService = new Shared.hap.Service.Switch(`${props.identify.name}.SleepMode`, 'SleepMode')
     this.AirConditionerSleepModeSetup(this.AirConditionerSleepModeService)
+    this.AirConditionerSleepModeService = new Shared.hap.Service.Switch(`${props.identify.name}.SleepMode`, 'SleepMode')
+    this.AirConditionerSleepModeSetup(this.AirConditionerSleepModeService)
+    // AirConditioner: Sound & Light
+    this.AirConditionerAlarmService = new Shared.hap.Service.Switch(`${props.identify.name}.Alarm`, 'Alarm')
+    this.AirConditionerAlarmSetup(this.AirConditionerAlarmService)
+    this.AirConditionerIndicatorLightService = new Shared.hap.Service.Switch(`${props.identify.name}.IndicatorLight`, 'IndicatorLight')
+    this.AirConditionerIndicatorLightSetup(this.AirConditionerIndicatorLightService)
   }
 
   AirConditionerSetup = () => {
@@ -194,6 +204,32 @@ export class XiaoMiAirConditionerMC5 implements AccessoryPlugin {
       },
     })
   }
+  AirConditionerAlarmSetup = (service: Service) => {
+    this.AirConditionerDevice.addCharacteristicListener(Shared.hap.Characteristic.On, {
+      service,
+      get: {
+        formatter: (valueMapping) =>
+          valueMapping[Specs.Alarm.name] ? 1 : 0
+      },
+      set: {
+        property: Specs.Alarm.name,
+        formatter: (value) => !!value
+      },
+    })
+  }
+  AirConditionerIndicatorLightSetup = (service: Service) => {
+    this.AirConditionerDevice.addCharacteristicListener(Shared.hap.Characteristic.On, {
+      service,
+      get: {
+        formatter: (valueMapping) =>
+          valueMapping[Specs.IndicatorLightSwitchStatus.name] ? 1 : 0
+      },
+      set: {
+        property: Specs.IndicatorLightSwitchStatus.name,
+        formatter: (value) => !!value
+      },
+    })
+  }
 
   /*
    * This method is optional to implement. It is called when HomeKit ask to identify the accessory.
@@ -215,6 +251,8 @@ export class XiaoMiAirConditionerMC5 implements AccessoryPlugin {
       this.AirConditionerHeaterModeService,
       this.AirConditionerDryerModeService,
       this.AirConditionerSleepModeService,
+      this.AirConditionerAlarmService,
+      this.AirConditionerIndicatorLightService,
     ]
   }
 

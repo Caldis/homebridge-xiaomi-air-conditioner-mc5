@@ -1,11 +1,11 @@
 {
-  "version": "1.4.0",
+  "version": "1.6.0",
   "name": "homebridge-xiaomi-air-conditioner-mc5",
   "description": "HomeBridge XiaoMi Air Conditioner MC5",
   "main": "dist/index.js",
   "homepage": "https://github.com/Caldis/homebridge-xiaomi-air-conditioner-mc5",
   "dependencies": {
-    "homebridge-mi-devices": "^1.5.2"
+    "homebridge-mi-devices": "*"
   },
   "devDependencies": {
     "@types/node": "latest",
@@ -15,6 +15,7 @@
   },
   "scripts": {
     "prepublishOnly": "rimraf ./dist && tsc",
+    "pre-commit": "yarn run prepublishOnly",
     "relink": "npm run prepublishOnly && npm unlink && npm link"
   },
   "keywords": [
