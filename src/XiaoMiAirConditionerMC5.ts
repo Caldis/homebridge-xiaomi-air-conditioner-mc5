@@ -1,4 +1,4 @@
-import { AccessoryPlugin, Service } from 'homebridge'
+import { AccessoryPlugin, Service, Categories } from 'homebridge'
 import {
   AirConditionerModeCode,
   FanLevelCode,
@@ -34,6 +34,7 @@ export class XiaoMiAirConditionerMC5 implements AccessoryPlugin {
     this.address = props.identify.address
     // Information
     this.informationService = new Shared.hap.Service.AccessoryInformation()
+      .setCharacteristic(Shared.hap.Characteristic.Category, Categories.AIR_CONDITIONER)
       .setCharacteristic(Shared.hap.Characteristic.Manufacturer, 'XiaoMi')
       .setCharacteristic(Shared.hap.Characteristic.Model, 'MC5')
     // AirConditioner

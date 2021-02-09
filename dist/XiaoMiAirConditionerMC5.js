@@ -159,6 +159,7 @@ class XiaoMiAirConditionerMC5 {
         this.address = props.identify.address;
         // Information
         this.informationService = new homebridge_mi_devices_1.Shared.hap.Service.AccessoryInformation()
+            .setCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.Category, 21 /* AIR_CONDITIONER */)
             .setCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.Manufacturer, 'XiaoMi')
             .setCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.Model, 'MC5');
         // AirConditioner

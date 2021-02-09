@@ -15,6 +15,7 @@
   },
   "scripts": {
     "prepublishOnly": "rimraf ./dist && tsc",
+    "pre-commit": "yarn run prepublishOnly",
     "relink": "npm run prepublishOnly && npm unlink && npm link"
   },
   "keywords": [
