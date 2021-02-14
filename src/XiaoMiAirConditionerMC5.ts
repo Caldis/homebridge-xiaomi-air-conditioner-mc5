@@ -74,7 +74,7 @@ export class XiaoMiAirConditionerMC5 implements AccessoryPlugin {
     this.AirConditionerDevice.addCharacteristicListener(Shared.hap.Characteristic.CurrentHeaterCoolerState, {
       get: {
         formatter: (valueMapping) => {
-          if (!valueMapping[Specs.AirConditionerSwitchStatus.name]) return 0
+          if (!valueMapping[Specs.AirConditionerSwitchStatus.name]) return 1
           return valueMapping[Specs.AirConditionerMode.name] === AirConditionerModeCode.Heat ? 2 : 3
         }
       },
@@ -82,13 +82,45 @@ export class XiaoMiAirConditionerMC5 implements AccessoryPlugin {
     this.AirConditionerDevice.addCharacteristicListener(Shared.hap.Characteristic.TargetHeaterCoolerState, {
       get: {
         formatter: (valueMapping) => {
-          if (!valueMapping[Specs.AirConditionerSwitchStatus.name]) return 0
-          return valueMapping[Specs.AirConditionerMode.name] === AirConditionerModeCode.Heat ? 1 : 2
+          switch (valueMapping[Specs.AirConditionerMode.name]) {
+            case AirConditionerModeCode.Fan:
+              this.AirConditionerService.setCharacteristic(Shared.hap.Characteristic.CurrentHeaterCoolerState, 1)
+              return 0
+            case AirConditionerModeCode.Heat:
+              this.AirConditionerService.setCharacteristic(Shared.hap.Characteristic.CurrentHeaterCoolerState, 2)
+              return 1
+            case AirConditionerModeCode.Cool:
+              this.AirConditionerService.setCharacteristic(Shared.hap.Characteristic.CurrentHeaterCoolerState, 3)
+              return 2
+          }
+          return 0
         }
       },
       set: {
         property: Specs.AirConditionerMode.name,
-        formatter: (value) => value === 1 ? AirConditionerModeCode.Heat : AirConditionerModeCode.Cool
+        formatter: (value) => {
+          switch (value) {
+            case 0:
+              this.AirConditionerECOModeService.updateCharacteristic(Shared.hap.Characteristic.On, 0)
+              this.AirConditionerHeaterModeService.updateCharacteristic(Shared.hap.Characteristic.On, 0)
+              this.AirConditionerDryerModeService.updateCharacteristic(Shared.hap.Characteristic.On, 0)
+              this.AirConditionerSleepModeService.updateCharacteristic(Shared.hap.Characteristic.On, 0)
+              return AirConditionerModeCode.Fan
+            case 1:
+              this.AirConditionerECOModeService.updateCharacteristic(Shared.hap.Characteristic.On, 0)
+              this.AirConditionerHeaterModeService.updateCharacteristic(Shared.hap.Characteristic.On, 1)
+              this.AirConditionerDryerModeService.updateCharacteristic(Shared.hap.Characteristic.On, 0)
+              this.AirConditionerSleepModeService.updateCharacteristic(Shared.hap.Characteristic.On, 0)
+              return AirConditionerModeCode.Heat
+            case 2:
+              this.AirConditionerECOModeService.updateCharacteristic(Shared.hap.Characteristic.On, 0)
+              this.AirConditionerHeaterModeService.updateCharacteristic(Shared.hap.Characteristic.On, 0)
+              // this.AirConditionerDryerModeService.updateCharacteristic(Shared.hap.Characteristic.On, 0)
+              this.AirConditionerSleepModeService.updateCharacteristic(Shared.hap.Characteristic.On, 0)
+              return AirConditionerModeCode.Cool
+          }
+          return AirConditionerModeCode.Fan
+        }
       },
     })
     this.AirConditionerDevice.addCharacteristicListener(Shared.hap.Characteristic.CurrentTemperature, {
@@ -125,10 +157,12 @@ export class XiaoMiAirConditionerMC5 implements AccessoryPlugin {
     })
     this.AirConditionerDevice.addCharacteristicListener(Shared.hap.Characteristic.RotationSpeed, {
       get: {
-        formatter: (valueMapping) =>  FanLevelCodeVolumeMapping[valueMapping[Specs.FanLevel.name] as FanLevelCode]
+        formatter: (valueMapping) => {
+          return FanLevelCodeVolumeMapping[valueMapping[Specs.FanLevel.name] as FanLevelCode]
+        }
       },
       set: {
-        property: Specs.FanVerticalSwing.name,
+        property: Specs.FanLevel.name,
         formatter: (value) => {
           if (value <= FanLevelCodeVolumeMapping[FanLevelCode.Auto]) {
             return FanLevelCode.Auto

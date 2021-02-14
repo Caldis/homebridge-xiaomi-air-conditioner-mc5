@@ -19,7 +19,7 @@ class XiaoMiAirConditionerMC5 {
                 get: {
                     formatter: (valueMapping) => {
                         if (!valueMapping[XiaoMiAirConditionerMC5_constant_1.Specs.AirConditionerSwitchStatus.name])
-                            return 0;
+                            return 1;
                         return valueMapping[XiaoMiAirConditionerMC5_constant_1.Specs.AirConditionerMode.name] === XiaoMiAirConditionerMC5_constant_1.AirConditionerModeCode.Heat ? 2 : 3;
                     }
                 },
@@ -27,14 +27,45 @@ class XiaoMiAirConditionerMC5 {
             this.AirConditionerDevice.addCharacteristicListener(homebridge_mi_devices_1.Shared.hap.Characteristic.TargetHeaterCoolerState, {
                 get: {
                     formatter: (valueMapping) => {
-                        if (!valueMapping[XiaoMiAirConditionerMC5_constant_1.Specs.AirConditionerSwitchStatus.name])
-                            return 0;
-                        return valueMapping[XiaoMiAirConditionerMC5_constant_1.Specs.AirConditionerMode.name] === XiaoMiAirConditionerMC5_constant_1.AirConditionerModeCode.Heat ? 1 : 2;
+                        switch (valueMapping[XiaoMiAirConditionerMC5_constant_1.Specs.AirConditionerMode.name]) {
+                            case XiaoMiAirConditionerMC5_constant_1.AirConditionerModeCode.Fan:
+                                this.AirConditionerService.updateCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.CurrentHeaterCoolerState, 1);
+                                return 0;
+                            case XiaoMiAirConditionerMC5_constant_1.AirConditionerModeCode.Heat:
+                                this.AirConditionerService.updateCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.CurrentHeaterCoolerState, 2);
+                                return 1;
+                            case XiaoMiAirConditionerMC5_constant_1.AirConditionerModeCode.Cool:
+                                this.AirConditionerService.updateCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.CurrentHeaterCoolerState, 3);
+                                return 2;
+                        }
+                        return 0;
                     }
                 },
                 set: {
                     property: XiaoMiAirConditionerMC5_constant_1.Specs.AirConditionerMode.name,
-                    formatter: (value) => value === 1 ? XiaoMiAirConditionerMC5_constant_1.AirConditionerModeCode.Heat : XiaoMiAirConditionerMC5_constant_1.AirConditionerModeCode.Cool
+                    formatter: (value) => {
+                        switch (value) {
+                            case 0:
+                                this.AirConditionerECOModeService.updateCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.On, 0);
+                                this.AirConditionerHeaterModeService.updateCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.On, 0);
+                                this.AirConditionerDryerModeService.updateCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.On, 0);
+                                this.AirConditionerSleepModeService.updateCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.On, 0);
+                                return XiaoMiAirConditionerMC5_constant_1.AirConditionerModeCode.Fan;
+                            case 1:
+                                this.AirConditionerECOModeService.updateCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.On, 0);
+                                this.AirConditionerHeaterModeService.updateCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.On, 1);
+                                this.AirConditionerDryerModeService.updateCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.On, 0);
+                                this.AirConditionerSleepModeService.updateCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.On, 0);
+                                return XiaoMiAirConditionerMC5_constant_1.AirConditionerModeCode.Heat;
+                            case 2:
+                                this.AirConditionerECOModeService.updateCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.On, 0);
+                                this.AirConditionerHeaterModeService.updateCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.On, 0);
+                                // this.AirConditionerDryerModeService.updateCharacteristic(Shared.hap.Characteristic.On, 0)
+                                this.AirConditionerSleepModeService.updateCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.On, 0);
+                                return XiaoMiAirConditionerMC5_constant_1.AirConditionerModeCode.Cool;
+                        }
+                        return XiaoMiAirConditionerMC5_constant_1.AirConditionerModeCode.Fan;
+                    }
                 },
             });
             this.AirConditionerDevice.addCharacteristicListener(homebridge_mi_devices_1.Shared.hap.Characteristic.CurrentTemperature, {
@@ -71,10 +102,12 @@ class XiaoMiAirConditionerMC5 {
             });
             this.AirConditionerDevice.addCharacteristicListener(homebridge_mi_devices_1.Shared.hap.Characteristic.RotationSpeed, {
                 get: {
-                    formatter: (valueMapping) => XiaoMiAirConditionerMC5_constant_1.FanLevelCodeVolumeMapping[valueMapping[XiaoMiAirConditionerMC5_constant_1.Specs.FanLevel.name]]
+                    formatter: (valueMapping) => {
+                        return XiaoMiAirConditionerMC5_constant_1.FanLevelCodeVolumeMapping[valueMapping[XiaoMiAirConditionerMC5_constant_1.Specs.FanLevel.name]];
+                    }
                 },
                 set: {
-                    property: XiaoMiAirConditionerMC5_constant_1.Specs.FanVerticalSwing.name,
+                    property: XiaoMiAirConditionerMC5_constant_1.Specs.FanLevel.name,
                     formatter: (value) => {
                         if (value <= XiaoMiAirConditionerMC5_constant_1.FanLevelCodeVolumeMapping[XiaoMiAirConditionerMC5_constant_1.FanLevelCode.Auto]) {
                             return XiaoMiAirConditionerMC5_constant_1.FanLevelCode.Auto;
