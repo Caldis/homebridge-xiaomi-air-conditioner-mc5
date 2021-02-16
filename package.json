@@ -1,5 +1,5 @@
 {
-  "version": "1.6.4",
+  "version": "1.6.6",
   "name": "homebridge-xiaomi-air-conditioner-mc5",
   "description": "HomeBridge XiaoMi Air Conditioner MC5",
   "main": "dist/index.js",
@@ -14,7 +14,7 @@
     "typescript": "latest"
   },
   "scripts": {
-    "prepublishOnly": "rimraf ./dist && tsc",
+    "prepublishOnly": "npm version patch --force && rimraf ./dist && tsc",
     "pre-commit": "yarn run prepublishOnly",
     "relink": "npm run prepublishOnly && npm unlink && npm link"
   },
