@@ -29,13 +29,10 @@ class XiaoMiAirConditionerMC5 {
                     formatter: (valueMapping) => {
                         switch (valueMapping[XiaoMiAirConditionerMC5_constant_1.Specs.AirConditionerMode.name]) {
                             case XiaoMiAirConditionerMC5_constant_1.AirConditionerModeCode.Fan:
-                                this.AirConditionerService.updateCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.CurrentHeaterCoolerState, 1);
                                 return 0;
                             case XiaoMiAirConditionerMC5_constant_1.AirConditionerModeCode.Heat:
-                                this.AirConditionerService.updateCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.CurrentHeaterCoolerState, 2);
                                 return 1;
                             case XiaoMiAirConditionerMC5_constant_1.AirConditionerModeCode.Cool:
-                                this.AirConditionerService.updateCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.CurrentHeaterCoolerState, 3);
                                 return 2;
                         }
                         return 0;
@@ -44,6 +41,17 @@ class XiaoMiAirConditionerMC5 {
                 set: {
                     property: XiaoMiAirConditionerMC5_constant_1.Specs.AirConditionerMode.name,
                     formatter: (value) => {
+                        switch (value) {
+                            case 0:
+                                this.AirConditionerService.setCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.CurrentHeaterCoolerState, 1);
+                                break;
+                            case 1:
+                                this.AirConditionerService.setCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.CurrentHeaterCoolerState, 2);
+                                break;
+                            case 2:
+                                this.AirConditionerService.setCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.CurrentHeaterCoolerState, 3);
+                                break;
+                        }
                         switch (value) {
                             case 0:
                                 this.AirConditionerECOModeService.updateCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.On, 0);

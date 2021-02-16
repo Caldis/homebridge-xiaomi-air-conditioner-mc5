@@ -84,13 +84,10 @@ export class XiaoMiAirConditionerMC5 implements AccessoryPlugin {
         formatter: (valueMapping) => {
           switch (valueMapping[Specs.AirConditionerMode.name]) {
             case AirConditionerModeCode.Fan:
-              this.AirConditionerService.setCharacteristic(Shared.hap.Characteristic.CurrentHeaterCoolerState, 1)
               return 0
             case AirConditionerModeCode.Heat:
-              this.AirConditionerService.setCharacteristic(Shared.hap.Characteristic.CurrentHeaterCoolerState, 2)
               return 1
             case AirConditionerModeCode.Cool:
-              this.AirConditionerService.setCharacteristic(Shared.hap.Characteristic.CurrentHeaterCoolerState, 3)
               return 2
           }
           return 0
@@ -99,6 +96,17 @@ export class XiaoMiAirConditionerMC5 implements AccessoryPlugin {
       set: {
         property: Specs.AirConditionerMode.name,
         formatter: (value) => {
+          switch (value) {
+            case 0:
+              this.AirConditionerService.setCharacteristic(Shared.hap.Characteristic.CurrentHeaterCoolerState, 1)
+              break
+            case 1:
+              this.AirConditionerService.setCharacteristic(Shared.hap.Characteristic.CurrentHeaterCoolerState, 2)
+              break
+            case 2:
+              this.AirConditionerService.setCharacteristic(Shared.hap.Characteristic.CurrentHeaterCoolerState, 3)
+              break
+          }
           switch (value) {
             case 0:
               this.AirConditionerECOModeService.updateCharacteristic(Shared.hap.Characteristic.On, 0)
