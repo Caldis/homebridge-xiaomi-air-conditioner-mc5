@@ -92,11 +92,11 @@ class XiaoMiAirConditionerMC5 {
             });
             this.AirConditionerDevice.addCharacteristicListener(homebridge_mi_devices_1.Shared.hap.Characteristic.HeatingThresholdTemperature, {
                 get: {
-                    formatter: (valueMapping) => valueMapping[XiaoMiAirConditionerMC5_constant_1.Specs.AirConditionerTargetTemperature.name]
+                    formatter: (valueMapping) => Math.min(valueMapping[XiaoMiAirConditionerMC5_constant_1.Specs.AirConditionerTargetTemperature.name], 25)
                 },
                 set: {
                     property: XiaoMiAirConditionerMC5_constant_1.Specs.AirConditionerTargetTemperature.name,
-                    formatter: (value) => value
+                    formatter: (value) => Math.min(value, 25)
                 },
             });
             this.AirConditionerDevice.addCharacteristicListener(homebridge_mi_devices_1.Shared.hap.Characteristic.SwingMode, {

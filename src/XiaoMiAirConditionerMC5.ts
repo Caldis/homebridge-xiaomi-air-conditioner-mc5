@@ -147,11 +147,11 @@ export class XiaoMiAirConditionerMC5 implements AccessoryPlugin {
     })
     this.AirConditionerDevice.addCharacteristicListener(Shared.hap.Characteristic.HeatingThresholdTemperature, {
       get: {
-        formatter: (valueMapping) => valueMapping[Specs.AirConditionerTargetTemperature.name]
+        formatter: (valueMapping) => Math.min(valueMapping[Specs.AirConditionerTargetTemperature.name] as number, 25)
       },
       set: {
         property: Specs.AirConditionerTargetTemperature.name,
-        formatter: (value) => value as number
+        formatter: (value) => Math.min(value as number, 25)
       },
     })
     this.AirConditionerDevice.addCharacteristicListener(Shared.hap.Characteristic.SwingMode, {
