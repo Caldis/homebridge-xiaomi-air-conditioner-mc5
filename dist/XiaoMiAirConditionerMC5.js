@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.XiaoMiAirConditionerMC5 = void 0;
-const homebridge_1 = require("homebridge");
 const XiaoMiAirConditionerMC5_constant_1 = require("./XiaoMiAirConditionerMC5.constant");
 const homebridge_mi_devices_1 = require("homebridge-mi-devices");
 class XiaoMiAirConditionerMC5 {
@@ -225,7 +224,7 @@ class XiaoMiAirConditionerMC5 {
         this.address = props.identify.address;
         // Information
         this.informationService = new homebridge_mi_devices_1.Shared.hap.Service.AccessoryInformation()
-            .setCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.Category, homebridge_1.Categories.AIR_CONDITIONER)
+            .setCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.Category, 21 /* AIR_CONDITIONER */)
             .setCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.Manufacturer, 'XiaoMi')
             .setCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.Model, 'MC5');
         // AirConditioner
