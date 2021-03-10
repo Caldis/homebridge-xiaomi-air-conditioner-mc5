@@ -38,3 +38,6 @@ npm i homebridge-xiaomi-air-conditioner-mc5@latest
    }
 ],
 ```
+
+## 参考
+http://miot-spec.org/miot-spec-v2/instances?status=all
