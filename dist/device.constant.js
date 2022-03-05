@@ -59,4 +59,4 @@ exports.FanLevelCodeVolumeMapping = {
     [FanLevelCode.Level6]: 84,
     [FanLevelCode.Level7]: 100,
 };
-//# sourceMappingURL=Device.constant.js.map
+//# sourceMappingURL=device.constant.js.map

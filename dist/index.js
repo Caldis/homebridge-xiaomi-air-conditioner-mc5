@@ -1,5 +1,5 @@
 "use strict";
-const XiaoMiAirConditionerMC5_1 = require("./XiaoMiAirConditionerMC5");
+const device_1 = require("./device");
 const homebridge_mi_devices_1 = require("homebridge-mi-devices");
 const PLATFORM_NAME = 'XiaoMiAirConditionerMC5';
 class Platform {
@@ -16,7 +16,7 @@ class Platform {
      * The set of exposed accessories CANNOT change over the lifetime of the plugin!
      */
     accessories(callback) {
-        callback(this.devices.map(identify => new XiaoMiAirConditionerMC5_1.XiaoMiAirConditionerMC5({ identify })));
+        callback(this.devices.map(identify => new device_1.Device({ identify })));
         homebridge_mi_devices_1.Shared.log.info(`${PLATFORM_NAME} platform is initialized`);
     }
 }

@@ -1,18 +1,18 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.XiaoMiAirConditionerMC5 = void 0;
-const XiaoMiAirConditionerMC5_constant_1 = require("./XiaoMiAirConditionerMC5.constant");
+exports.Device = void 0;
+const device_constant_1 = require("./device.constant");
 const homebridge_mi_devices_1 = require("homebridge-mi-devices");
-class XiaoMiAirConditionerMC5 {
+class Device {
     constructor(props) {
         this.AirConditionerSetup = () => {
             this.AirConditionerDevice.addCharacteristicListener(homebridge_mi_devices_1.Shared.hap.Characteristic.Active, {
                 get: {
                     defaultValue: 0,
-                    formatter: (valueMapping) => valueMapping[XiaoMiAirConditionerMC5_constant_1.Specs.AirConditionerSwitchStatus.name] ? 1 : 0
+                    formatter: (valueMapping) => valueMapping[device_constant_1.Specs.AirConditionerSwitchStatus.name] ? 1 : 0
                 },
                 set: {
-                    property: XiaoMiAirConditionerMC5_constant_1.Specs.AirConditionerSwitchStatus.name,
+                    property: device_constant_1.Specs.AirConditionerSwitchStatus.name,
                     formatter: (value) => value === 1
                 },
             });
@@ -20,9 +20,9 @@ class XiaoMiAirConditionerMC5 {
                 get: {
                     defaultValue: 1,
                     formatter: (valueMapping) => {
-                        if (!valueMapping[XiaoMiAirConditionerMC5_constant_1.Specs.AirConditionerSwitchStatus.name])
+                        if (!valueMapping[device_constant_1.Specs.AirConditionerSwitchStatus.name])
                             return 1;
-                        return valueMapping[XiaoMiAirConditionerMC5_constant_1.Specs.AirConditionerMode.name] === XiaoMiAirConditionerMC5_constant_1.AirConditionerModeCode.Heat ? 2 : 3;
+                        return valueMapping[device_constant_1.Specs.AirConditionerMode.name] === device_constant_1.AirConditionerModeCode.Heat ? 2 : 3;
                     }
                 },
             });
@@ -30,19 +30,19 @@ class XiaoMiAirConditionerMC5 {
                 get: {
                     defaultValue: 0,
                     formatter: (valueMapping) => {
-                        switch (valueMapping[XiaoMiAirConditionerMC5_constant_1.Specs.AirConditionerMode.name]) {
-                            case XiaoMiAirConditionerMC5_constant_1.AirConditionerModeCode.Fan:
+                        switch (valueMapping[device_constant_1.Specs.AirConditionerMode.name]) {
+                            case device_constant_1.AirConditionerModeCode.Fan:
                                 return 0;
-                            case XiaoMiAirConditionerMC5_constant_1.AirConditionerModeCode.Heat:
+                            case device_constant_1.AirConditionerModeCode.Heat:
                                 return 1;
-                            case XiaoMiAirConditionerMC5_constant_1.AirConditionerModeCode.Cool:
+                            case device_constant_1.AirConditionerModeCode.Cool:
                                 return 2;
                         }
                         return 0;
                     }
                 },
                 set: {
-                    property: XiaoMiAirConditionerMC5_constant_1.Specs.AirConditionerMode.name,
+                    property: device_constant_1.Specs.AirConditionerMode.name,
                     formatter: (value) => {
                         switch (value) {
                             case 0:
@@ -61,57 +61,57 @@ class XiaoMiAirConditionerMC5 {
                                 this.AirConditionerHeaterModeService.updateCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.On, 0);
                                 this.AirConditionerDryerModeService.updateCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.On, 0);
                                 this.AirConditionerSleepModeService.updateCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.On, 0);
-                                return XiaoMiAirConditionerMC5_constant_1.AirConditionerModeCode.Fan;
+                                return device_constant_1.AirConditionerModeCode.Fan;
                             case 1:
                                 this.AirConditionerECOModeService.updateCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.On, 0);
                                 this.AirConditionerHeaterModeService.updateCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.On, 1);
                                 this.AirConditionerDryerModeService.updateCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.On, 0);
                                 this.AirConditionerSleepModeService.updateCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.On, 0);
-                                return XiaoMiAirConditionerMC5_constant_1.AirConditionerModeCode.Heat;
+                                return device_constant_1.AirConditionerModeCode.Heat;
                             case 2:
                                 this.AirConditionerECOModeService.updateCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.On, 0);
                                 this.AirConditionerHeaterModeService.updateCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.On, 0);
                                 // this.AirConditionerDryerModeService.updateCharacteristic(Shared.hap.Characteristic.On, 0)
                                 this.AirConditionerSleepModeService.updateCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.On, 0);
-                                return XiaoMiAirConditionerMC5_constant_1.AirConditionerModeCode.Cool;
+                                return device_constant_1.AirConditionerModeCode.Cool;
                         }
-                        return XiaoMiAirConditionerMC5_constant_1.AirConditionerModeCode.Fan;
+                        return device_constant_1.AirConditionerModeCode.Fan;
                     }
                 },
             });
             this.AirConditionerDevice.addCharacteristicListener(homebridge_mi_devices_1.Shared.hap.Characteristic.CurrentTemperature, {
                 get: {
                     defaultValue: 0,
-                    formatter: (valueMapping) => valueMapping[XiaoMiAirConditionerMC5_constant_1.Specs.EnvironmentTemperature.name]
+                    formatter: (valueMapping) => valueMapping[device_constant_1.Specs.EnvironmentTemperature.name]
                 },
             });
             this.AirConditionerDevice.addCharacteristicListener(homebridge_mi_devices_1.Shared.hap.Characteristic.CoolingThresholdTemperature, {
                 get: {
                     defaultValue: 10,
-                    formatter: (valueMapping) => valueMapping[XiaoMiAirConditionerMC5_constant_1.Specs.AirConditionerTargetTemperature.name]
+                    formatter: (valueMapping) => valueMapping[device_constant_1.Specs.AirConditionerTargetTemperature.name]
                 },
                 set: {
-                    property: XiaoMiAirConditionerMC5_constant_1.Specs.AirConditionerTargetTemperature.name,
+                    property: device_constant_1.Specs.AirConditionerTargetTemperature.name,
                     formatter: (value) => value
                 },
             });
             this.AirConditionerDevice.addCharacteristicListener(homebridge_mi_devices_1.Shared.hap.Characteristic.HeatingThresholdTemperature, {
                 get: {
                     defaultValue: 0,
-                    formatter: (valueMapping) => Math.min(valueMapping[XiaoMiAirConditionerMC5_constant_1.Specs.AirConditionerTargetTemperature.name], 25)
+                    formatter: (valueMapping) => Math.min(valueMapping[device_constant_1.Specs.AirConditionerTargetTemperature.name], 25)
                 },
                 set: {
-                    property: XiaoMiAirConditionerMC5_constant_1.Specs.AirConditionerTargetTemperature.name,
+                    property: device_constant_1.Specs.AirConditionerTargetTemperature.name,
                     formatter: (value) => Math.min(value, 25)
                 },
             });
             this.AirConditionerDevice.addCharacteristicListener(homebridge_mi_devices_1.Shared.hap.Characteristic.SwingMode, {
                 get: {
                     defaultValue: 0,
-                    formatter: (valueMapping) => valueMapping[XiaoMiAirConditionerMC5_constant_1.Specs.FanVerticalSwing.name] ? 1 : 0
+                    formatter: (valueMapping) => valueMapping[device_constant_1.Specs.FanVerticalSwing.name] ? 1 : 0
                 },
                 set: {
-                    property: XiaoMiAirConditionerMC5_constant_1.Specs.FanVerticalSwing.name,
+                    property: device_constant_1.Specs.FanVerticalSwing.name,
                     formatter: (value) => value === 1
                 },
             });
@@ -119,37 +119,37 @@ class XiaoMiAirConditionerMC5 {
                 get: {
                     defaultValue: 0,
                     formatter: (valueMapping) => {
-                        return XiaoMiAirConditionerMC5_constant_1.FanLevelCodeVolumeMapping[valueMapping[XiaoMiAirConditionerMC5_constant_1.Specs.FanLevel.name]];
+                        return device_constant_1.FanLevelCodeVolumeMapping[valueMapping[device_constant_1.Specs.FanLevel.name]];
                     }
                 },
                 set: {
-                    property: XiaoMiAirConditionerMC5_constant_1.Specs.FanLevel.name,
+                    property: device_constant_1.Specs.FanLevel.name,
                     formatter: (value) => {
-                        if (value <= XiaoMiAirConditionerMC5_constant_1.FanLevelCodeVolumeMapping[XiaoMiAirConditionerMC5_constant_1.FanLevelCode.Auto]) {
-                            return XiaoMiAirConditionerMC5_constant_1.FanLevelCode.Auto;
+                        if (value <= device_constant_1.FanLevelCodeVolumeMapping[device_constant_1.FanLevelCode.Auto]) {
+                            return device_constant_1.FanLevelCode.Auto;
                         }
-                        else if (value <= XiaoMiAirConditionerMC5_constant_1.FanLevelCodeVolumeMapping[XiaoMiAirConditionerMC5_constant_1.FanLevelCode.Level1]) {
-                            return XiaoMiAirConditionerMC5_constant_1.FanLevelCode.Level1;
+                        else if (value <= device_constant_1.FanLevelCodeVolumeMapping[device_constant_1.FanLevelCode.Level1]) {
+                            return device_constant_1.FanLevelCode.Level1;
                         }
-                        else if (value <= XiaoMiAirConditionerMC5_constant_1.FanLevelCodeVolumeMapping[XiaoMiAirConditionerMC5_constant_1.FanLevelCode.Level2]) {
-                            return XiaoMiAirConditionerMC5_constant_1.FanLevelCode.Level2;
+                        else if (value <= device_constant_1.FanLevelCodeVolumeMapping[device_constant_1.FanLevelCode.Level2]) {
+                            return device_constant_1.FanLevelCode.Level2;
                         }
-                        else if (value <= XiaoMiAirConditionerMC5_constant_1.FanLevelCodeVolumeMapping[XiaoMiAirConditionerMC5_constant_1.FanLevelCode.Level3]) {
-                            return XiaoMiAirConditionerMC5_constant_1.FanLevelCode.Level3;
+                        else if (value <= device_constant_1.FanLevelCodeVolumeMapping[device_constant_1.FanLevelCode.Level3]) {
+                            return device_constant_1.FanLevelCode.Level3;
                         }
-                        else if (value <= XiaoMiAirConditionerMC5_constant_1.FanLevelCodeVolumeMapping[XiaoMiAirConditionerMC5_constant_1.FanLevelCode.Level4]) {
-                            return XiaoMiAirConditionerMC5_constant_1.FanLevelCode.Level4;
+                        else if (value <= device_constant_1.FanLevelCodeVolumeMapping[device_constant_1.FanLevelCode.Level4]) {
+                            return device_constant_1.FanLevelCode.Level4;
                         }
-                        else if (value <= XiaoMiAirConditionerMC5_constant_1.FanLevelCodeVolumeMapping[XiaoMiAirConditionerMC5_constant_1.FanLevelCode.Level5]) {
-                            return XiaoMiAirConditionerMC5_constant_1.FanLevelCode.Level5;
+                        else if (value <= device_constant_1.FanLevelCodeVolumeMapping[device_constant_1.FanLevelCode.Level5]) {
+                            return device_constant_1.FanLevelCode.Level5;
                         }
-                        else if (value <= XiaoMiAirConditionerMC5_constant_1.FanLevelCodeVolumeMapping[XiaoMiAirConditionerMC5_constant_1.FanLevelCode.Level6]) {
-                            return XiaoMiAirConditionerMC5_constant_1.FanLevelCode.Level6;
+                        else if (value <= device_constant_1.FanLevelCodeVolumeMapping[device_constant_1.FanLevelCode.Level6]) {
+                            return device_constant_1.FanLevelCode.Level6;
                         }
-                        else if (value <= XiaoMiAirConditionerMC5_constant_1.FanLevelCodeVolumeMapping[XiaoMiAirConditionerMC5_constant_1.FanLevelCode.Level7]) {
-                            return XiaoMiAirConditionerMC5_constant_1.FanLevelCode.Level7;
+                        else if (value <= device_constant_1.FanLevelCodeVolumeMapping[device_constant_1.FanLevelCode.Level7]) {
+                            return device_constant_1.FanLevelCode.Level7;
                         }
-                        return XiaoMiAirConditionerMC5_constant_1.FanLevelCode.Auto;
+                        return device_constant_1.FanLevelCode.Auto;
                     }
                 },
             });
@@ -159,10 +159,10 @@ class XiaoMiAirConditionerMC5 {
                 service,
                 get: {
                     defaultValue: 0,
-                    formatter: (valueMapping) => valueMapping[XiaoMiAirConditionerMC5_constant_1.Specs.AirConditionerECOMode.name] ? 1 : 0
+                    formatter: (valueMapping) => valueMapping[device_constant_1.Specs.AirConditionerECOMode.name] ? 1 : 0
                 },
                 set: {
-                    property: XiaoMiAirConditionerMC5_constant_1.Specs.AirConditionerECOMode.name,
+                    property: device_constant_1.Specs.AirConditionerECOMode.name,
                     formatter: (value) => !!value
                 },
             });
@@ -172,10 +172,10 @@ class XiaoMiAirConditionerMC5 {
                 service,
                 get: {
                     defaultValue: 0,
-                    formatter: (valueMapping) => valueMapping[XiaoMiAirConditionerMC5_constant_1.Specs.AirConditionerHeaterMode.name] ? 1 : 0
+                    formatter: (valueMapping) => valueMapping[device_constant_1.Specs.AirConditionerHeaterMode.name] ? 1 : 0
                 },
                 set: {
-                    property: XiaoMiAirConditionerMC5_constant_1.Specs.AirConditionerHeaterMode.name,
+                    property: device_constant_1.Specs.AirConditionerHeaterMode.name,
                     formatter: (value) => !!value
                 },
             });
@@ -185,10 +185,10 @@ class XiaoMiAirConditionerMC5 {
                 service,
                 get: {
                     defaultValue: 0,
-                    formatter: (valueMapping) => valueMapping[XiaoMiAirConditionerMC5_constant_1.Specs.AirConditionerDryerMode.name] ? 1 : 0
+                    formatter: (valueMapping) => valueMapping[device_constant_1.Specs.AirConditionerDryerMode.name] ? 1 : 0
                 },
                 set: {
-                    property: XiaoMiAirConditionerMC5_constant_1.Specs.AirConditionerDryerMode.name,
+                    property: device_constant_1.Specs.AirConditionerDryerMode.name,
                     formatter: (value) => !!value
                 },
             });
@@ -198,10 +198,10 @@ class XiaoMiAirConditionerMC5 {
                 service,
                 get: {
                     defaultValue: 0,
-                    formatter: (valueMapping) => valueMapping[XiaoMiAirConditionerMC5_constant_1.Specs.AirConditionerSleepMode.name] ? 1 : 0
+                    formatter: (valueMapping) => valueMapping[device_constant_1.Specs.AirConditionerSleepMode.name] ? 1 : 0
                 },
                 set: {
-                    property: XiaoMiAirConditionerMC5_constant_1.Specs.AirConditionerSleepMode.name,
+                    property: device_constant_1.Specs.AirConditionerSleepMode.name,
                     formatter: (value) => !!value
                 },
             });
@@ -211,10 +211,10 @@ class XiaoMiAirConditionerMC5 {
                 service,
                 get: {
                     defaultValue: 0,
-                    formatter: (valueMapping) => valueMapping[XiaoMiAirConditionerMC5_constant_1.Specs.Alarm.name] ? 1 : 0
+                    formatter: (valueMapping) => valueMapping[device_constant_1.Specs.Alarm.name] ? 1 : 0
                 },
                 set: {
-                    property: XiaoMiAirConditionerMC5_constant_1.Specs.Alarm.name,
+                    property: device_constant_1.Specs.Alarm.name,
                     formatter: (value) => !!value
                 },
             });
@@ -224,10 +224,10 @@ class XiaoMiAirConditionerMC5 {
                 service,
                 get: {
                     defaultValue: 0,
-                    formatter: (valueMapping) => valueMapping[XiaoMiAirConditionerMC5_constant_1.Specs.IndicatorLightSwitchStatus.name] ? 1 : 0
+                    formatter: (valueMapping) => valueMapping[device_constant_1.Specs.IndicatorLightSwitchStatus.name] ? 1 : 0
                 },
                 set: {
-                    property: XiaoMiAirConditionerMC5_constant_1.Specs.IndicatorLightSwitchStatus.name,
+                    property: device_constant_1.Specs.IndicatorLightSwitchStatus.name,
                     formatter: (value) => !!value
                 },
             });
@@ -243,7 +243,7 @@ class XiaoMiAirConditionerMC5 {
             .setCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.Model, 'MC5');
         // AirConditioner
         this.AirConditionerService = new homebridge_mi_devices_1.Shared.hap.Service.HeaterCooler(props.identify.name);
-        this.AirConditionerDevice = new homebridge_mi_devices_1.MIoTDevice({ ...props, service: this.AirConditionerService, specs: XiaoMiAirConditionerMC5_constant_1.Specs });
+        this.AirConditionerDevice = new homebridge_mi_devices_1.MIoTDevice({ ...props, service: this.AirConditionerService, specs: device_constant_1.Specs });
         this.AirConditionerSetup();
         // AirConditioner: Extra Modes
         this.AirConditionerECOModeService = new homebridge_mi_devices_1.Shared.hap.Service.Switch(`${props.identify.name}.ECOMode`, 'ECOMode');
@@ -286,5 +286,5 @@ class XiaoMiAirConditionerMC5 {
         ];
     }
 }
-exports.XiaoMiAirConditionerMC5 = XiaoMiAirConditionerMC5;
-//# sourceMappingURL=Device.js.map
+exports.Device = Device;
+//# sourceMappingURL=device.js.map
