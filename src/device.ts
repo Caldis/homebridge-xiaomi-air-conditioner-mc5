@@ -4,14 +4,14 @@ import {
   FanLevelCode,
   FanLevelCodeVolumeMapping,
   Specs
-} from './XiaoMiAirConditionerMC5.constant'
+} from './device.constant'
 import { MIoTDevice, MiIdentify, Shared } from 'homebridge-mi-devices'
 
 type Props = {
   identify: MiIdentify
 }
 
-export class XiaoMiAirConditionerMC5 implements AccessoryPlugin {
+export class Device implements AccessoryPlugin {
 
   // Requirement
   private readonly name: string
@@ -64,6 +64,7 @@ export class XiaoMiAirConditionerMC5 implements AccessoryPlugin {
   AirConditionerSetup = () => {
     this.AirConditionerDevice.addCharacteristicListener(Shared.hap.Characteristic.Active, {
       get: {
+        defaultValue: 0,
         formatter: (valueMapping) => valueMapping[Specs.AirConditionerSwitchStatus.name] ? 1 : 0
       },
       set: {
@@ -73,6 +74,7 @@ export class XiaoMiAirConditionerMC5 implements AccessoryPlugin {
     })
     this.AirConditionerDevice.addCharacteristicListener(Shared.hap.Characteristic.CurrentHeaterCoolerState, {
       get: {
+        defaultValue: 1,
         formatter: (valueMapping) => {
           if (!valueMapping[Specs.AirConditionerSwitchStatus.name]) return 1
           return valueMapping[Specs.AirConditionerMode.name] === AirConditionerModeCode.Heat ? 2 : 3
@@ -81,6 +83,7 @@ export class XiaoMiAirConditionerMC5 implements AccessoryPlugin {
     })
     this.AirConditionerDevice.addCharacteristicListener(Shared.hap.Characteristic.TargetHeaterCoolerState, {
       get: {
+        defaultValue: 0,
         formatter: (valueMapping) => {
           switch (valueMapping[Specs.AirConditionerMode.name]) {
             case AirConditionerModeCode.Fan:
@@ -133,11 +136,13 @@ export class XiaoMiAirConditionerMC5 implements AccessoryPlugin {
     })
     this.AirConditionerDevice.addCharacteristicListener(Shared.hap.Characteristic.CurrentTemperature, {
       get: {
+        defaultValue: 0,
         formatter: (valueMapping) => valueMapping[Specs.EnvironmentTemperature.name]
       },
     })
     this.AirConditionerDevice.addCharacteristicListener(Shared.hap.Characteristic.CoolingThresholdTemperature, {
       get: {
+        defaultValue: 10,
         formatter: (valueMapping) => valueMapping[Specs.AirConditionerTargetTemperature.name]
       },
       set: {
@@ -147,6 +152,7 @@ export class XiaoMiAirConditionerMC5 implements AccessoryPlugin {
     })
     this.AirConditionerDevice.addCharacteristicListener(Shared.hap.Characteristic.HeatingThresholdTemperature, {
       get: {
+        defaultValue: 0,
         formatter: (valueMapping) => Math.min(valueMapping[Specs.AirConditionerTargetTemperature.name] as number, 25)
       },
       set: {
@@ -156,6 +162,7 @@ export class XiaoMiAirConditionerMC5 implements AccessoryPlugin {
     })
     this.AirConditionerDevice.addCharacteristicListener(Shared.hap.Characteristic.SwingMode, {
       get: {
+        defaultValue: 0,
         formatter: (valueMapping) => valueMapping[Specs.FanVerticalSwing.name] ? 1 : 0
       },
       set: {
@@ -165,6 +172,7 @@ export class XiaoMiAirConditionerMC5 implements AccessoryPlugin {
     })
     this.AirConditionerDevice.addCharacteristicListener(Shared.hap.Characteristic.RotationSpeed, {
       get: {
+        defaultValue: 0,
         formatter: (valueMapping) => {
           return FanLevelCodeVolumeMapping[valueMapping[Specs.FanLevel.name] as FanLevelCode]
         }
@@ -198,6 +206,7 @@ export class XiaoMiAirConditionerMC5 implements AccessoryPlugin {
     this.AirConditionerDevice.addCharacteristicListener(Shared.hap.Characteristic.On, {
       service,
       get: {
+        defaultValue: 0,
         formatter: (valueMapping) =>
           valueMapping[Specs.AirConditionerECOMode.name] ? 1 : 0
       },
@@ -211,6 +220,7 @@ export class XiaoMiAirConditionerMC5 implements AccessoryPlugin {
     this.AirConditionerDevice.addCharacteristicListener(Shared.hap.Characteristic.On, {
       service,
       get: {
+        defaultValue: 0,
         formatter: (valueMapping) =>
           valueMapping[Specs.AirConditionerHeaterMode.name] ? 1 : 0
       },
@@ -224,6 +234,7 @@ export class XiaoMiAirConditionerMC5 implements AccessoryPlugin {
     this.AirConditionerDevice.addCharacteristicListener(Shared.hap.Characteristic.On, {
       service,
       get: {
+        defaultValue: 0,
         formatter: (valueMapping) =>
           valueMapping[Specs.AirConditionerDryerMode.name] ? 1 : 0
       },
@@ -237,6 +248,7 @@ export class XiaoMiAirConditionerMC5 implements AccessoryPlugin {
     this.AirConditionerDevice.addCharacteristicListener(Shared.hap.Characteristic.On, {
       service,
       get: {
+        defaultValue: 0,
         formatter: (valueMapping) =>
           valueMapping[Specs.AirConditionerSleepMode.name] ? 1 : 0
       },
@@ -250,6 +262,7 @@ export class XiaoMiAirConditionerMC5 implements AccessoryPlugin {
     this.AirConditionerDevice.addCharacteristicListener(Shared.hap.Characteristic.On, {
       service,
       get: {
+        defaultValue: 0,
         formatter: (valueMapping) =>
           valueMapping[Specs.Alarm.name] ? 1 : 0
       },
@@ -263,6 +276,7 @@ export class XiaoMiAirConditionerMC5 implements AccessoryPlugin {
     this.AirConditionerDevice.addCharacteristicListener(Shared.hap.Characteristic.On, {
       service,
       get: {
+        defaultValue: 0,
         formatter: (valueMapping) =>
           valueMapping[Specs.IndicatorLightSwitchStatus.name] ? 1 : 0
       },

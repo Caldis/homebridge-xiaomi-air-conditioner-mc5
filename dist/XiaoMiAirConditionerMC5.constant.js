@@ -59,4 +59,4 @@ exports.FanLevelCodeVolumeMapping = {
     [FanLevelCode.Level6]: 84,
     [FanLevelCode.Level7]: 100,
 };
-//# sourceMappingURL=XiaoMiAirConditionerMC5.constant.js.map
+//# sourceMappingURL=Device.constant.js.map
