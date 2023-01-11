@@ -57,25 +57,25 @@ class Device {
                         }
                         switch (value) {
                             case 0:
-                                this.AirConditionerECOModeService.updateCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.On, 0);
-                                this.AirConditionerHeaterModeService.updateCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.On, 0);
-                                this.AirConditionerDryerModeService.updateCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.On, 0);
-                                this.AirConditionerSleepModeService.updateCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.On, 0);
+                                // this.AirConditionerECOModeService.updateCharacteristic(Shared.hap.Characteristic.On, 0)
+                                // this.AirConditionerHeaterModeService.updateCharacteristic(Shared.hap.Characteristic.On, 0)
+                                // this.AirConditionerDryerModeService.updateCharacteristic(Shared.hap.Characteristic.On, 0)
+                                // this.AirConditionerSleepModeService.updateCharacteristic(Shared.hap.Characteristic.On, 0)
                                 return device_constant_1.AirConditionerModeCode.Fan;
                             case 1:
-                                this.AirConditionerECOModeService.updateCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.On, 0);
-                                this.AirConditionerHeaterModeService.updateCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.On, 1);
-                                this.AirConditionerDryerModeService.updateCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.On, 0);
-                                this.AirConditionerSleepModeService.updateCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.On, 0);
+                                // this.AirConditionerECOModeService.updateCharacteristic(Shared.hap.Characteristic.On, 0)
+                                // this.AirConditionerHeaterModeService.updateCharacteristic(Shared.hap.Characteristic.On, 1) // 不自动开电辅热
+                                // this.AirConditionerDryerModeService.updateCharacteristic(Shared.hap.Characteristic.On, 0)
+                                // this.AirConditionerSleepModeService.updateCharacteristic(Shared.hap.Characteristic.On, 0)
                                 return device_constant_1.AirConditionerModeCode.Heat;
                             case 2:
-                                this.AirConditionerECOModeService.updateCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.On, 0);
-                                this.AirConditionerHeaterModeService.updateCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.On, 0);
+                                // this.AirConditionerECOModeService.updateCharacteristic(Shared.hap.Characteristic.On, 0)
+                                this.AirConditionerHeaterModeService.updateCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.On, 0); // 但是制冷记得关电辅热
                                 // this.AirConditionerDryerModeService.updateCharacteristic(Shared.hap.Characteristic.On, 0)
-                                this.AirConditionerSleepModeService.updateCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.On, 0);
+                                // this.AirConditionerSleepModeService.updateCharacteristic(Shared.hap.Characteristic.On, 0)
                                 return device_constant_1.AirConditionerModeCode.Cool;
                         }
-                        return device_constant_1.AirConditionerModeCode.Fan;
+                        return device_constant_1.AirConditionerModeCode.Fan; // 默認吹風
                     }
                 },
             });
@@ -85,24 +85,39 @@ class Device {
                     formatter: (valueMapping) => valueMapping[device_constant_1.Specs.EnvironmentTemperature.name]
                 },
             });
+            // 制冷门限
+            // @see https://github.com/apple/HomeKitADK/blob/master/HAP/HAPCharacteristicTypes.h
+            // * This characteristic describes the cooling threshold in Celsius for accessories that support simultaneous heating and
+            // * cooling. The value of this characteristic represents the maximum temperature that must be reached before cooling is
+            // * turned on.
+            // * For example, if the `Target Heating Cooling State` is set to "Auto" and the current temperature goes above the
+            // * maximum temperature, then the cooling mechanism should turn on to decrease the current temperature until the
+            // * minimum temperature is reached.
             this.AirConditionerDevice.addCharacteristicListener(homebridge_mi_devices_1.Shared.hap.Characteristic.CoolingThresholdTemperature, {
                 get: {
-                    defaultValue: 10,
-                    formatter: (valueMapping) => valueMapping[device_constant_1.Specs.AirConditionerTargetTemperature.name]
+                    defaultValue: 16,
+                    formatter: (valueMapping) => 16 // valueMapping[Specs.AirConditionerTargetTemperature.name]
                 },
                 set: {
                     property: device_constant_1.Specs.AirConditionerTargetTemperature.name,
                     formatter: (value) => value
                 },
             });
+            // 制热门限
+            //  * This characteristic describes the heating threshold in Celsius for accessories that support simultaneous heating and
+            //  * cooling. The value of this characteristic represents the minimum temperature that must be reached before heating is
+            //  * turned on.
+            //  * For example, if the `Target Heating Cooling State` is set to "Auto" and the current temperature goes below the
+            //  * minimum temperature, then the heating mechanism should turn on to increase the current temperature until the
+            //  * minimum temperature is reached.
             this.AirConditionerDevice.addCharacteristicListener(homebridge_mi_devices_1.Shared.hap.Characteristic.HeatingThresholdTemperature, {
                 get: {
-                    defaultValue: 0,
-                    formatter: (valueMapping) => Math.min(valueMapping[device_constant_1.Specs.AirConditionerTargetTemperature.name], 25)
+                    defaultValue: 31,
+                    formatter: (valueMapping) => 31 // valueMapping[Specs.AirConditionerTargetTemperature.name]
                 },
                 set: {
                     property: device_constant_1.Specs.AirConditionerTargetTemperature.name,
-                    formatter: (value) => Math.min(value, 25)
+                    formatter: (value) => value
                 },
             });
             this.AirConditionerDevice.addCharacteristicListener(homebridge_mi_devices_1.Shared.hap.Characteristic.SwingMode, {
