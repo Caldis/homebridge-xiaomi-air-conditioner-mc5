@@ -44,21 +44,34 @@ export class Device implements AccessoryPlugin {
     this.AirConditionerDevice = new MIoTDevice({ ...props, service: this.AirConditionerService, specs: Specs })
     this.AirConditionerSetup()
     // AirConditioner: Extra Modes
-    this.AirConditionerECOModeService = new Shared.hap.Service.Switch(`${props.identify.name}.ECOMode`, 'ECOMode')
+    this.AirConditionerECOModeService = new Shared.hap.Service.Switch(`ECOMode`, 'ECOMode')
     this.AirConditionerECOModeSetup(this.AirConditionerECOModeService)
-    this.AirConditionerHeaterModeService = new Shared.hap.Service.Switch(`${props.identify.name}.HeaterMode`, 'HeaterMode')
+    this.AirConditionerHeaterModeService = new Shared.hap.Service.Switch(`HeaterMode`, 'HeaterMode')
     this.AirConditionerHeaterModeSetup(this.AirConditionerHeaterModeService)
-    this.AirConditionerDryerModeService = new Shared.hap.Service.Switch(`${props.identify.name}.DryerMode`, 'DryerMode')
+    this.AirConditionerDryerModeService = new Shared.hap.Service.Switch(`DryerMode`, 'DryerMode')
     this.AirConditionerDryerModeSetup(this.AirConditionerDryerModeService)
-    this.AirConditionerSleepModeService = new Shared.hap.Service.Switch(`${props.identify.name}.SleepMode`, 'SleepMode')
+    this.AirConditionerSleepModeService = new Shared.hap.Service.Switch(`SleepMode`, 'SleepMode')
     this.AirConditionerSleepModeSetup(this.AirConditionerSleepModeService)
-    this.AirConditionerSleepModeService = new Shared.hap.Service.Switch(`${props.identify.name}.SleepMode`, 'SleepMode')
+    this.AirConditionerSleepModeService = new Shared.hap.Service.Switch(`SleepMode`, 'SleepMode')
     this.AirConditionerSleepModeSetup(this.AirConditionerSleepModeService)
     // AirConditioner: Sound & Light
-    this.AirConditionerAlarmService = new Shared.hap.Service.Switch(`${props.identify.name}.Alarm`, 'Alarm')
+    this.AirConditionerAlarmService = new Shared.hap.Service.Switch(`Alarm`, 'Alarm')
     this.AirConditionerAlarmSetup(this.AirConditionerAlarmService)
-    this.AirConditionerIndicatorLightService = new Shared.hap.Service.Switch(`${props.identify.name}.IndicatorLight`, 'IndicatorLight')
+    this.AirConditionerIndicatorLightService = new Shared.hap.Service.Switch(`IndicatorLight`, 'IndicatorLight')
     this.AirConditionerIndicatorLightSetup(this.AirConditionerIndicatorLightService)
+    // AirConditioner: Threshold
+    // 某个版本之后 HomeBridge 调整了 HeatingThresholdTemperature 的上下限, Max 仅能到 25, 这里需要重写其值
+    // @see https://developers.homebridge.io/#/api/characteristics#characteristicsetprops
+    this.AirConditionerService.getCharacteristic(Shared.hap.Characteristic.CoolingThresholdTemperature).setProps({
+      minValue: 16,
+      maxValue: 31,
+      minStep: 0.5,
+    })
+    this.AirConditionerService.getCharacteristic(Shared.hap.Characteristic.HeatingThresholdTemperature).setProps({
+      minValue: 16,
+      maxValue: 31,
+      minStep: 0.5,
+    })
   }
 
   AirConditionerSetup = () => {
@@ -119,13 +132,13 @@ export class Device implements AccessoryPlugin {
               return AirConditionerModeCode.Fan
             case 1:
               // this.AirConditionerECOModeService.updateCharacteristic(Shared.hap.Characteristic.On, 0)
-              // this.AirConditionerHeaterModeService.updateCharacteristic(Shared.hap.Characteristic.On, 1) // 不自动开电辅热
+              this.AirConditionerHeaterModeService.updateCharacteristic(Shared.hap.Characteristic.On, 0) // 关电辅热
               // this.AirConditionerDryerModeService.updateCharacteristic(Shared.hap.Characteristic.On, 0)
               // this.AirConditionerSleepModeService.updateCharacteristic(Shared.hap.Characteristic.On, 0)
               return AirConditionerModeCode.Heat
             case 2:
               // this.AirConditionerECOModeService.updateCharacteristic(Shared.hap.Characteristic.On, 0)
-              this.AirConditionerHeaterModeService.updateCharacteristic(Shared.hap.Characteristic.On, 0) // 但是制冷记得关电辅热
+              this.AirConditionerHeaterModeService.updateCharacteristic(Shared.hap.Characteristic.On, 0) // 关电辅热
               // this.AirConditionerDryerModeService.updateCharacteristic(Shared.hap.Characteristic.On, 0)
               // this.AirConditionerSleepModeService.updateCharacteristic(Shared.hap.Characteristic.On, 0)
               return AirConditionerModeCode.Cool
@@ -140,35 +153,28 @@ export class Device implements AccessoryPlugin {
         formatter: (valueMapping) => valueMapping[Specs.EnvironmentTemperature.name]
       },
     })
-    // 制冷门限
+    // 制冷上限
     // @see https://github.com/apple/HomeKitADK/blob/master/HAP/HAPCharacteristicTypes.h
-    // * This characteristic describes the cooling threshold in Celsius for accessories that support simultaneous heating and
-    // * cooling. The value of this characteristic represents the maximum temperature that must be reached before cooling is
-    // * turned on.
-    // * For example, if the `Target Heating Cooling State` is set to "Auto" and the current temperature goes above the
-    // * maximum temperature, then the cooling mechanism should turn on to decrease the current temperature until the
-    // * minimum temperature is reached.
+    // 该特性描述了支持同时加热和冷却的附件的冷却阈值，单位为摄氏度。该特性的值表示在开启冷却之前必须达到的最高温度。
+    // 例如，如果 "目标加热冷却状态 "被设置为 "自动"，并且当前温度超过了最高温度，那么冷却机制应该开启，以降低当前温度，直到达到最低温度。
     this.AirConditionerDevice.addCharacteristicListener(Shared.hap.Characteristic.CoolingThresholdTemperature, {
       get: {
-        defaultValue: 16,
-        formatter: (valueMapping) => 16 // valueMapping[Specs.AirConditionerTargetTemperature.name]
+        defaultValue: 0,
+        formatter: (valueMapping) => valueMapping[Specs.AirConditionerTargetTemperature.name]
       },
       set: {
         property: Specs.AirConditionerTargetTemperature.name,
         formatter: (value) => value as number
       },
     })
-    // 制热门限
-    //  * This characteristic describes the heating threshold in Celsius for accessories that support simultaneous heating and
-    //  * cooling. The value of this characteristic represents the minimum temperature that must be reached before heating is
-    //  * turned on.
-    //  * For example, if the `Target Heating Cooling State` is set to "Auto" and the current temperature goes below the
-    //  * minimum temperature, then the heating mechanism should turn on to increase the current temperature until the
-    //  * minimum temperature is reached.
+    // 制热下限
+    // @see https://github.com/apple/HomeKitADK/blob/master/HAP/HAPCharacteristicTypes.h
+    // 该特性描述了支持同时加热和冷却的附件的加热阈值，单位为摄氏度。这个特性的值表示在开启加热之前必须达到的最低温度。
+    // 例如，如果 "目标加热冷却状态 "被设置为 "自动"，并且当前温度低于最低温度，那么加热机制应该打开以提高当前温度，直到达到最低温度。
     this.AirConditionerDevice.addCharacteristicListener(Shared.hap.Characteristic.HeatingThresholdTemperature, {
       get: {
-        defaultValue: 31,
-        formatter: (valueMapping) => 31 // valueMapping[Specs.AirConditionerTargetTemperature.name]
+        defaultValue: 0,
+        formatter: (valueMapping) => valueMapping[Specs.AirConditionerTargetTemperature.name]
       },
       set: {
         property: Specs.AirConditionerTargetTemperature.name,
@@ -318,12 +324,12 @@ export class Device implements AccessoryPlugin {
     return [
       this.informationService,
       this.AirConditionerService,
-      this.AirConditionerECOModeService,
+      // this.AirConditionerECOModeService,
       this.AirConditionerHeaterModeService,
-      this.AirConditionerDryerModeService,
-      this.AirConditionerSleepModeService,
-      this.AirConditionerAlarmService,
-      this.AirConditionerIndicatorLightService,
+      // this.AirConditionerDryerModeService,
+      // this.AirConditionerSleepModeService,
+      // this.AirConditionerAlarmService,
+      // this.AirConditionerIndicatorLightService,
     ]
   }
 
