@@ -80,6 +80,12 @@ export class Device implements AccessoryPlugin {
       maxValue: 31,
       minStep: 0.5,
     })
+    // 设置风量间隔: 10
+    this.AirConditionerService.getCharacteristic(Shared.hap.Characteristic.RotationSpeed).setProps({
+      minValue: 1,
+      maxValue: 100,
+      minStep: 10,
+    })
   }
 
   AirConditionerSetup = () => {

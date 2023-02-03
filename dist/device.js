@@ -254,6 +254,7 @@ class Device {
         this.AirConditionerDevice = new homebridge_mi_devices_1.MIoTDevice({ ...props, service: this.AirConditionerService, specs: device_constant_1.Specs });
         this.AirConditionerSetup();
         // AirConditioner: Extra Modes
+        // 注意这里的 displayName 和 subType 都需要设置, 不然可能会有 UUID 重复的错误, 原因未知
         this.AirConditionerECOModeService = new homebridge_mi_devices_1.Shared.hap.Service.Switch(`ECOMode`, 'ECOMode');
         this.AirConditionerECOModeService.getCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.ConfiguredName).updateValue('ECOMode');
         this.AirConditionerECOModeSetup(this.AirConditionerECOModeService);
@@ -288,6 +289,12 @@ class Device {
             minValue: 16,
             maxValue: 31,
             minStep: 0.5,
+        });
+        // 设置风量间隔: 10
+        this.AirConditionerService.getCharacteristic(homebridge_mi_devices_1.Shared.hap.Characteristic.RotationSpeed).setProps({
+            minValue: 1,
+            maxValue: 100,
+            minStep: 10,
         });
     }
     /*
